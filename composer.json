@@ -1,6 +1,6 @@
 {
     "name": "jacmoe/yii2-mdpages-module",
-    "description": "Renders markdown files from local folder as views",
+    "description": "Yii2 module that loads and renders a collection of Markdown pages",
     "type": "yii2-extension",
     "keywords": ["yii2","extension"],
     "license": "MIT",
