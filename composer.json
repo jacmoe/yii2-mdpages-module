@@ -1,0 +1,21 @@
+{
+    "name": "jacmoe/yii2-mdpages-module",
+    "description": "Renders markdown files from local folder as views",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jacob Moen",
+            "email": "jacmoe.dk@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "jacmoe\\mdpages\\": ""
+        }
+    }
+}
