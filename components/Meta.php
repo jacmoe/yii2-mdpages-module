@@ -3,6 +3,7 @@
 namespace jacmoe\mdpages\components;
 
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Yaml\Exception\ParseException;
 
 class Meta {
     /**
@@ -25,7 +26,11 @@ class Meta {
 		}
 
 		$meta = trim(substr($rawData, strlen($start), strpos($rawData, $stop) - (strlen($stop) + 1)));
-		$meta = Yaml::parse($meta);//$this->parsePhileFormat($meta);
+    try {
+		    $meta = Yaml::parse($meta);//$this->parsePhileFormat($meta);
+    } catch (ParseException $e) {
+        printf("Unable to parse the YAML string: %s<br>", $e->getMessage());
+    }
 		$meta = ($meta === null) ? [] : $this->convertKeys($meta);
 		return $meta;
 	}
