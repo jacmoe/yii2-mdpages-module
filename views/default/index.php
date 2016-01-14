@@ -16,8 +16,13 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 </div>
 <?php
-    $files = \jacmoe\mdpages\components\Utility::getFiles(\Yii::getAlias('@pages/content/'));
-    foreach($files as $file) {
-        echo $file . "<br>";
-    }
+$metaParser = new jacmoe\mdpages\components\Meta;
+$files = jacmoe\mdpages\components\Utility::getFiles(\Yii::getAlias('@pages/content/'));
+foreach($files as $file) {
+    echo $file . "<br>";
+    $metatags = $metaParser->parse(file_get_contents($file));
+    echo '<pre>';
+    print_r($metatags);
+    echo '</pre>';
+}
 ?>
