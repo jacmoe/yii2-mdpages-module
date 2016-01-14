@@ -24,6 +24,10 @@ class Module extends \yii\base\Module
     {
         parent::init();
 
-        \Yii::setAlias('@pages', __DIR__);
+        if (\Yii::$app instanceof \yii\console\Application) {
+            $this->controllerNamespace = 'jacmoe\mdpages\commands';
+        }
+
+        \Yii::setAlias('@pages', __DIR__ . '/content');
     }
 }
