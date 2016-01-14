@@ -11,7 +11,8 @@
         }
     ],
     "require": {
-        "yiisoft/yii2": "*"
+        "yiisoft/yii2": "*",
+        "symfony/yaml": "^2.7",
     },
     "autoload": {
         "psr-4": {
