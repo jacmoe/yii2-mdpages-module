@@ -13,6 +13,9 @@ namespace jacmoe\mdpages\components;
 class Utility {
 
   public static function getFiles($directory, $filter = '\jacmoe\mdpages\components\GeneralFileFilterIterator') {
+    if(!file_exists($directory)) {
+      return null;
+    }
     $files = new $filter(
     new \RecursiveIteratorIterator(
     new \RecursiveDirectoryIterator(
