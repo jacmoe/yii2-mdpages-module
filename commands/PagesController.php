@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace mdpages\commands;
+namespace jacmoe\mdpages\commands;
 
 use yii\console\Controller;
 

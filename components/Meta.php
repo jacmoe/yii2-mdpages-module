@@ -1,6 +1,6 @@
 <?php
 
-namespace app\modules\mdpages\components;
+namespace jacmoe\mdpages\components;
 
 use Symfony\Component\Yaml\Yaml;
 
