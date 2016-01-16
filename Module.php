@@ -34,6 +34,6 @@ class Module extends \yii\base\Module
             $this->controllerNamespace = 'jacmoe\mdpages\commands';
         }
 
-        \Yii::setAlias('@pages', __DIR__ . '/' $this->$pages_directory);
+        \Yii::setAlias('@pages', __DIR__ . '/' . $this->pages_directory);
     }
 }
