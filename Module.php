@@ -7,6 +7,12 @@ namespace jacmoe\mdpages;
  */
 class Module extends \yii\base\Module
 {
+    public $repository_url = '';
+
+    public $page_extension = '.md';
+
+    public $pages_directory = 'content';
+
     /**
      * @inheritdoc
      */
@@ -28,6 +34,6 @@ class Module extends \yii\base\Module
             $this->controllerNamespace = 'jacmoe\mdpages\commands';
         }
 
-        \Yii::setAlias('@pages', __DIR__ . '/content');
+        \Yii::setAlias('@pages', __DIR__ . '/' $this->$pages_directory);
     }
 }
