@@ -12,7 +12,8 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "symfony/yaml": "^3.0"
+        "symfony/yaml": "^3.0",
+        "knplabs/github-api": "^1.5"
     },
     "autoload": {
         "psr-4": {
