@@ -7,7 +7,7 @@ use yii\web\Controller;
 /**
  * Default controller for the `mdpages` module
  */
-class DefaultController extends Controller
+class PageController extends Controller
 {
     public function actions()
     {
