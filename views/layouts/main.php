@@ -47,6 +47,9 @@ use yii\widgets\Breadcrumbs;
             </div>
         </div>
     </header>
+    <div class="row">
+        <?= $content ?>
+    </div>
 </div>
 
 <footer class="footer">
