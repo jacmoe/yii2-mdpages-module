@@ -11,7 +11,7 @@ class Module extends \yii\base\Module
 
     public $page_extension = '.md';
 
-    public $pages_directory = 'content';
+    public $pages_directory = '@app/content';
 
     /**
      * @inheritdoc
@@ -34,6 +34,11 @@ class Module extends \yii\base\Module
             $this->controllerNamespace = 'jacmoe\mdpages\commands';
         }
 
-        \Yii::setAlias('@pages', __DIR__ . '/' . $this->pages_directory);
+        \Yii::setAlias('@pages', $this->pages_directory);
+
+        $dir = \Yii::getAlias($this->pages_directory);
+        if(!file_exists($dir)) {
+            \yii\helpers\FileHelper::createDirectory($dir);
+        }
     }
 }
