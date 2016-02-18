@@ -16,7 +16,7 @@ use yii\widgets\Breadcrumbs;
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
-    <?= Html::cssFile(YII_DEBUG ? '@web/css/all.css' : '@web/css/all.min.css?v=' . filemtime(Yii::getAlias('@webroot/css/all.min.css'))) ?>
+    <?= Html::cssFile(YII_DEBUG ? '@web/css/site.css' : '@web/css/site.min.css?v=' . filemtime(Yii::getAlias('@webroot/css/all.min.css'))) ?>
     <?php $this->head() ?>
 </head>
 <body>
@@ -39,22 +39,7 @@ use yii\widgets\Breadcrumbs;
                     echo Nav::widget([
                         'options' => ['class' => 'menu'],
                         'items' => [
-                            ['label' => 'Home', 'url' => ['/site/index']],
-                            ['label' => 'About', 'url' => ['/site/about']],
-                            ['label' => 'Pages', 'url' => ['/mdpages'], 'active' => ($module == 'mdpages')],
-                            ['label' => 'Contact', 'url' => ['/site/contact']],
-                            Yii::$app->user->isGuest ? (
-                                ['label' => 'Login', 'url' => ['/site/login']]
-                            ) : (
-                                '<li>'
-                                . Html::beginForm(['/site/logout'], 'post')
-                                . Html::submitButton(
-                                    'Logout (' . Yii::$app->user->identity->username . ')',
-                                    ['class' => 'button']
-                                )
-                                . Html::endForm()
-                                . '</li>'
-                            )
+                            ['label' => 'Home', 'url' => ['default/index']],
                         ],
                     ]);
                     ?>
@@ -62,13 +47,6 @@ use yii\widgets\Breadcrumbs;
             </div>
         </div>
     </header>
-    <div class="row">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-            'options' => ['class' => 'breadcrumbs'],
-        ]) ?>
-        <?= $content ?>
-    </div>
 </div>
 
 <footer class="footer">
@@ -79,7 +57,6 @@ use yii\widgets\Breadcrumbs;
     </div>
 </footer>
 
-<?= Html::jsFile(YII_DEBUG ? '@web/js/all.js' : '@web/js/all.min.js?v=' . filemtime(Yii::getAlias('@webroot/js/all.min.js'))) ?>
 <?php $this->endBody() ?>
 </body>
 </html>
