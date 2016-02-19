@@ -34,6 +34,8 @@ class PageController extends Controller
      */
     public function actionView($page_id)
     {
+        $page_parts = explode('/', $page_id);
+
         $dir = \Yii::getAlias('@pages');
         $file = $dir . '/' . $page_id . '.md';
         $metatags = array();
@@ -42,7 +44,7 @@ class PageController extends Controller
             $metatags = $metaParser->parse(file_get_contents($file));
         }
 
-        return $this->render('view', array('metatags' => $metatags));
+        return $this->render('view', array('metatags' => $metatags, 'parts' => $page_parts));
     }
 
 }
