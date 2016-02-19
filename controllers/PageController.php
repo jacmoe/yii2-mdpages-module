@@ -26,4 +26,24 @@ class PageController extends Controller
     {
         return $this->render('index');
     }
+
+    /**
+     * Renders a page
+     * @param string $page_id id of page (url)
+     * @return string
+     */
+    public function actionView($page_id)
+    {
+        $dir = \Yii::getAlias('@pages');
+        $file = $dir . '/' . $page_id . '.md';
+        $title = '';
+        if(file_exists($file)) {
+            $metaParser = new \jacmoe\mdpages\components\Meta;
+            $metatags = $metaParser->parse(file_get_contents($file));
+            $title = $metatags['title'];
+        }
+
+        return $this->render('view', array('title' => $title));
+    }
+
 }
