@@ -23,6 +23,17 @@ use jacmoe\mdpages\components\yii2tech\Shell;
 
 class PagesController extends Controller
 {
+    /**
+     * @var Mutex|array|string the mutex object or the application component ID of the mutex.
+     * After the controller object is created, if you want to change this property, you should only assign it
+     * with a mutex connection object.
+     */
+    public $mutex = 'yii\mutex\FileMutex';
+    /**
+     * @var string path to project root directory, which means VCS root directory. Path aliases can be use here.
+     */
+    public $projectRootPath = '@app';
+
     public $versionControlSystems = [
         '.git' => [
             'class' => 'jacmoe\mdpages\components\yii2tech\Git'
@@ -42,7 +53,15 @@ class PagesController extends Controller
 
     public function actionInit()
     {
-        echo "Hi\n";
+        //if (!is_file(__DIR__ . '/config.php')) {
+        //    throw new Exception("The configuration file does not exist: $configFile");
+        //}
+        //Yii::configure($this, require __DIR__ . '/config.php');
+
+        if (!$this->acquireMutex()) {
+            $this->stderr("Execution terminated: command is already running.\n", Console::FG_RED);
+            return self::EXIT_CODE_ERROR;
+        }
         //$git = Yii::createObject('jacmoe\mdpages\components\yii2tech\Git');
 
         $result = Shell::execute('(cd {projectRoot}; {binPath} -a)', [
@@ -51,5 +70,32 @@ class PagesController extends Controller
         ]);
         echo $result;
 
+        $this->releaseMutex();
+        return self::EXIT_CODE_NORMAL;
+    }
+    /**
+     * Acquires current action lock.
+     * @return boolean lock acquiring result.
+     */
+    protected function acquireMutex()
+    {
+        $this->mutex = Instance::ensure($this->mutex, Mutex::className());
+        return $this->mutex->acquire($this->composeMutexName());
+    }
+    /**
+     * Release current action lock.
+     * @return boolean lock release result.
+     */
+    protected function releaseMutex()
+    {
+        return $this->mutex->release($this->composeMutexName());
+    }
+    /**
+     * Composes the mutex name.
+     * @return string mutex name.
+     */
+    protected function composeMutexName()
+    {
+        return $this->className() . '::' . $this->action->getUniqueId();
     }
 }
