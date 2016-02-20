@@ -22,19 +22,19 @@ class Utility {
             return null;
         }
         $files = new $filter(
-            new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator(
-            $directory,
-            \RecursiveDirectoryIterator::FOLLOW_SYMLINKS
-            )
-            )
-        );
-        $result = array();
-        foreach ($files as $file) {
-            /** @var \SplFileInfo $file */
-            $result[] = $file->getPathname();
-        }
-
-        return $result;
+        new \RecursiveIteratorIterator(
+        new \RecursiveDirectoryIterator(
+        $directory,
+        \RecursiveDirectoryIterator::FOLLOW_SYMLINKS
+        )
+        )
+    );
+    $result = array();
+    foreach ($files as $file) {
+        /** @var \SplFileInfo $file */
+        $result[] = $file->getPathname();
     }
+
+    return $result;
+}
 }
