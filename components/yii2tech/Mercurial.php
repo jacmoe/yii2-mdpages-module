@@ -5,37 +5,30 @@
  * @license [New BSD License](http://www.opensource.org/licenses/bsd-license.php)
  */
 
-namespace jacmoe\mdpages\components\yii2tech\selfupdate;
-
-use yii\base\Exception;
+namespace jacmoe\mdpages\components\yii2tech;
 
 /**
- * Git represents GIT version control system.
+ * Mercurial represents Mercurial (Hg) version control system.
  *
- * @see https://git-scm.com/
+ * @see https://mercurial.selenic.com/
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
-class Git extends VersionControlSystem
+class Mercurial extends VersionControlSystem
 {
     /**
-     * @var string path to the 'git' bin command.
-     * By default simple 'git' is used assuming it available as global shell command.
-     * It could be '/usr/bin/git' for example.
+     * @var string path to the 'hg' bin command.
+     * By default simple 'hg' is used assuming it available as global shell command.
+     * It could be '/usr/bin/hg' for example.
      */
-    public $binPath = 'git';
-    /**
-     * @var string name of the GIT remote, which should be used to get changes.
-     */
-    public $remoteName = 'origin';
+    public $binPath = 'hg';
 
 
     /**
-     * Returns currently active GIT branch name for the project.
+     * Returns currently active Mercurial branch name for the project.
      * @param string $projectRoot VCS project root directory path.
      * @return string branch name.
-     * @throws Exception on failure.
      */
     public function getCurrentBranch($projectRoot)
     {
@@ -43,12 +36,7 @@ class Git extends VersionControlSystem
             '{binPath}' => $this->binPath,
             '{projectRoot}' => $projectRoot,
         ]);
-        foreach ($result->outputLines as $line) {
-            if (($pos = stripos($line, '* ')) === 0) {
-                return trim(substr($line, $pos + 2));
-            }
-        }
-        throw new Exception('Unable to detect current GIT branch: ' . $result->toString());
+        return $result->outputLines[0];
     }
 
     /**
@@ -59,19 +47,13 @@ class Git extends VersionControlSystem
      */
     public function hasRemoteChanges($projectRoot, &$log = null)
     {
-        $placeholders = [
+        $result = Shell::execute("(cd {projectRoot}; {binPath} incoming -b {branch} --newest-first --limit 1)", [
             '{binPath}' => $this->binPath,
             '{projectRoot}' => $projectRoot,
-            '{remote}' => $this->remoteName,
             '{branch}' => $this->getCurrentBranch($projectRoot),
-        ];
-
-        $fetchResult = Shell::execute('(cd {projectRoot}; {binPath} fetch {remote})', $placeholders);
-        $log = $fetchResult->toString() . "\n";
-
-        $result = Shell::execute('(cd {projectRoot}; {binPath} diff --numstat HEAD {remote}/{branch})', $placeholders);
-        $log .= $result->toString();
-        return ($result->isOk() && !$result->isOutputEmpty());
+        ]);
+        $log = $result->toString();
+        return $result->isOk();
     }
 
     /**
@@ -82,10 +64,9 @@ class Git extends VersionControlSystem
      */
     public function applyRemoteChanges($projectRoot, &$log = null)
     {
-        $result = Shell::execute('(cd {projectRoot}; {binPath} merge {remote}/{branch})', [
+        $result = Shell::execute('(cd {projectRoot}; {binPath} pull -b {branch} -u)', [
             '{binPath}' => $this->binPath,
             '{projectRoot}' => $projectRoot,
-            '{remote}' => $this->remoteName,
             '{branch}' => $this->getCurrentBranch($projectRoot),
         ]);
         $log = $result->toString();

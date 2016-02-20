@@ -5,7 +5,7 @@
  * @license [New BSD License](http://www.opensource.org/licenses/bsd-license.php)
  */
 
-namespace jacmoe\mdpages\components\yii2tech\selfupdate;
+namespace jacmoe\mdpages\components\yii2tech;
 
 /**
  * VersionControlSystem is an interface, which particular version control system implementation should match
