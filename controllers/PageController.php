@@ -9,6 +9,11 @@ use yii\web\Controller;
  */
 class PageController extends Controller
 {
+    /**
+     * @var \jacmoe\mdpages\Module
+     */
+    public $module;
+
     public function actions()
     {
         return [

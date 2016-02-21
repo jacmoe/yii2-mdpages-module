@@ -18,7 +18,6 @@ use yii\helpers\FileHelper;
 use yii\helpers\Inflector;
 use yii\mail\BaseMailer;
 use yii\mutex\Mutex;
-
 use jacmoe\mdpages\components\yii2tech\Shell;
 
 class PagesController extends Controller
@@ -29,6 +28,9 @@ class PagesController extends Controller
      * with a mutex connection object.
      */
     public $mutex = 'yii\mutex\FileMutex';
+
+    protected $flywheel_config = null;
+    protected $flywheel_repo = null;
 
     public $versionControlSystems = [
         '.git' => [
@@ -68,11 +70,22 @@ class PagesController extends Controller
 
         $result = Shell::execute('(cd {projectRoot}; {binPath} clone {repository} content)', [
             '{binPath}' => 'git',
-            '{projectRoot}' => \Yii::getAlias($module->projectRootPath),
+            '{projectRoot}' => \Yii::getAlias($module->root_directory),
             '{repository}' => $module->repository_url,
         ]);
         $log = $result->toString();
         echo $log . "\n\n";
+
+        $repo = $this->getFlywheelRepo();
+
+        $post = new \JamesMoss\Flywheel\Document(array(
+            'title'     => 'An introduction to Flywheel',
+            'dateAdded' => new \DateTime('2013-10-10'),
+            'body'      => 'A lightweight, flat-file, document database for PHP...',
+            'wordCount' => 7,
+        ));
+
+        $repo->store($post);        
 
         $this->releaseMutex();
         return self::EXIT_CODE_NORMAL;
@@ -102,4 +115,22 @@ class PagesController extends Controller
     {
         return $this->className() . '::' . $this->action->getUniqueId();
     }
+
+    protected function getFlywheelRepo()
+    {
+        $module = \jacmoe\mdpages\Module::getInstance();
+
+        if(!isset($this->flywheel_config)) {
+            $config_dir = \Yii::getAlias($module->flywheel_config);
+            if(!file_exists($config_dir)) {
+                \yii\helpers\FileHelper::createDirectory($config_dir);
+            }
+            $this->flywheel_config = new \JamesMoss\Flywheel\Config($config_dir);
+        }
+        if(!isset($this->flywheel_repo)) {
+            $this->flywheel_repo = new \JamesMoss\Flywheel\Repository($module->flywheel_repo, $this->flywheel_config);
+        }
+        return $this->flywheel_repo;
+    }
+
 }
