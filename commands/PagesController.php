@@ -99,10 +99,14 @@ class PagesController extends Controller
                 $url = $raw_url['dirname'] . '/' . $url;
             }
 
-            $page = new Document(array(
-                'title'     => $metatags['title'],
-                'url' => $url,
-            ));
+            $values = array();
+
+            foreach($metatags as $key => $value) {
+                $values[$key] = $value;
+            }
+            $values['url'] = $url;
+
+            $page = new Document($values);
             $repo->store($page);
 
         }
