@@ -29,10 +29,6 @@ class PagesController extends Controller
      * with a mutex connection object.
      */
     public $mutex = 'yii\mutex\FileMutex';
-    /**
-     * @var string path to project root directory, which means VCS root directory. Path aliases can be use here.
-     */
-    public $projectRootPath = '@app';
 
     public $versionControlSystems = [
         '.git' => [
@@ -53,7 +49,9 @@ class PagesController extends Controller
 
     public function actionInit()
     {
-        if(file_exists(\Yii::getAlias($this->projectRootPath . '/content'))) {
+        $module = \jacmoe\mdpages\Module::getInstance();
+
+        if(file_exists(\Yii::getAlias($module->pages_directory))) {
             $this->stderr("Execution terminated: content directory already cloned.\n", Console::FG_RED);
             return self::EXIT_CODE_ERROR;
         }
@@ -70,8 +68,8 @@ class PagesController extends Controller
 
         $result = Shell::execute('(cd {projectRoot}; {binPath} clone {repository} content)', [
             '{binPath}' => 'git',
-            '{projectRoot}' => \Yii::getAlias($this->projectRootPath),
-            '{repository}' => 'https://github.com/jacmoe/mdpages-pages.git',
+            '{projectRoot}' => \Yii::getAlias($module->projectRootPath),
+            '{repository}' => $module->repository_url,
         ]);
         $log = $result->toString();
         echo $log . "\n\n";

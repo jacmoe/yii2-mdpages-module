@@ -7,7 +7,9 @@ namespace jacmoe\mdpages;
 */
 class Module extends \yii\base\Module
 {
-    public $repository_url = '';
+    public $repository_url = 'https://github.com/jacmoe/mdpages-pages.git';
+
+    public $projectRootPath = '@app';
 
     public $page_extension = '.md';
 
