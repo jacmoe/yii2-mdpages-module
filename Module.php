@@ -3,8 +3,8 @@
 namespace jacmoe\mdpages;
 
 /**
- * mdpages module definition class
- */
+* mdpages module definition class
+*/
 class Module extends \yii\base\Module
 {
     public $repository_url = '';
@@ -14,18 +14,18 @@ class Module extends \yii\base\Module
     public $pages_directory = '@app/content';
 
     /**
-     * @inheritdoc
-     */
+    * @inheritdoc
+    */
     public $controllerNamespace = 'jacmoe\mdpages\controllers';
 
     /**
-     * @inheritdoc
-     */
+    * @inheritdoc
+    */
     public $defaultRoute = 'page/index';
 
     /**
-     * @inheritdoc
-     */
+    * @inheritdoc
+    */
     public function init()
     {
         parent::init();
@@ -33,6 +33,28 @@ class Module extends \yii\base\Module
         if (\Yii::$app instanceof \yii\console\Application) {
             $this->controllerNamespace = 'jacmoe\mdpages\commands';
         }
+
+        // if (\Yii::$app instanceof \yii\web\Application) {
+        //     \Yii::$app->getUrlManager()->addRules([
+        //         [
+        //             'class' => 'yii\web\UrlRule',
+        //             'pattern' => $this->id . '/<controller:\w+>/<id:[\w_\/-]+>',
+        //             'route' => $this->id . '/<controller>/view',
+        //             'encodeParams' => false
+        //         ],
+        //         [
+        //             'class' => 'yii\web\UrlRule',
+        //             'pattern' => $this->id . '/<controller:\w+>/<action:\w+>/<id:[\w_\/-]+>',
+        //             'route' => $this->id . '/<controller>/<action>',
+        //             'encodeParams' => false
+        //         ],
+        //         [
+        //             'class' => 'yii\web\UrlRule',
+        //             'pattern' => $this->id . '/<controller:\w+>/<action:\w+>',
+        //             'route' => $this->id . '/<controller>/<action>',
+        //         ],
+        //     ], false);
+        // }
 
         \Yii::setAlias('@pages', $this->pages_directory);
 

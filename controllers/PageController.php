@@ -32,12 +32,12 @@ class PageController extends Controller
      * @param string $page_id id of page (url)
      * @return string
      */
-    public function actionView($page_id)
+    public function actionView($id)
     {
-        $page_parts = explode('/', $page_id);
+        $page_parts = explode('/', $id);
 
         $dir = \Yii::getAlias('@pages');
-        $file = $dir . '/' . $page_id . '.md';
+        $file = $dir . '/' . $id . '.md';
         $metatags = array();
         if(file_exists($file)) {
             $metaParser = new \jacmoe\mdpages\components\Meta;
