@@ -20,6 +20,8 @@ use yii\mail\BaseMailer;
 use yii\mutex\Mutex;
 
 use jacmoe\mdpages\components\yii2tech\Shell;
+use jacmoe\mdpages\components\Utility;
+use jacmoe\mdpages\components\Meta;
 use JamesMoss\Flywheel\Document;
 
 class PagesController extends Controller
@@ -80,27 +82,30 @@ class PagesController extends Controller
 
         $repo = $this->getFlywheelRepo();
 
-        $page = new Document(array(
-            'title'     => 'An introduction to Flywheel',
-            'dateAdded' => new \DateTime('2013-10-10'),
-            'body'      => 'A lightweight, flat-file, document database for PHP...',
-            'wordCount' => 7,
-        ));
-        $repo->store($page);
-        $page = new Document(array(
-            'title'     => 'An introduction to Flywheel',
-            'dateAdded' => new \DateTime('2013-10-10'),
-            'body'      => 'A lightweight, flat-file, document database for PHP...',
-            'wordCount' => 7,
-        ));
-        $repo->store($page);
-        $page = new Document(array(
-            'title'     => 'An introduction to Flywheel',
-            'dateAdded' => new \DateTime('2013-10-10'),
-            'body'      => 'A lightweight, flat-file, document database for PHP...',
-            'wordCount' => 7,
-        ));
-        $repo->store($page);
+        $metaParser = new Meta;
+        $filter = '\jacmoe\mdpages\components\ContentFileFilterIterator';
+        $files = Utility::getFiles(\Yii::getAlias('@pages'), $filter);
+
+        foreach($files as $file) {
+            $metatags = array();
+            $metatags = $metaParser->parse(file_get_contents($file));
+
+            $url = substr($file, strlen(\Yii::getAlias('@pages')));
+            $url = ltrim($url, '/');
+            $raw_url = pathinfo($url);
+            $url = $raw_url['filename'];
+            if($url == 'README') continue;
+            if($raw_url['dirname'] != '.') {
+                $url = $raw_url['dirname'] . '/' . $url;
+            }
+
+            $page = new Document(array(
+                'title'     => $metatags['title'],
+                'url' => $url,
+            ));
+            $repo->store($page);
+
+        }
 
         $this->releaseMutex();
         return self::EXIT_CODE_NORMAL;
