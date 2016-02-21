@@ -18,7 +18,9 @@ use yii\helpers\FileHelper;
 use yii\helpers\Inflector;
 use yii\mail\BaseMailer;
 use yii\mutex\Mutex;
+
 use jacmoe\mdpages\components\yii2tech\Shell;
+use JamesMoss\Flywheel\Document;
 
 class PagesController extends Controller
 {
@@ -78,14 +80,27 @@ class PagesController extends Controller
 
         $repo = $this->getFlywheelRepo();
 
-        $post = new \JamesMoss\Flywheel\Document(array(
+        $page = new Document(array(
             'title'     => 'An introduction to Flywheel',
             'dateAdded' => new \DateTime('2013-10-10'),
             'body'      => 'A lightweight, flat-file, document database for PHP...',
             'wordCount' => 7,
         ));
-
-        $repo->store($post);        
+        $repo->store($page);
+        $page = new Document(array(
+            'title'     => 'An introduction to Flywheel',
+            'dateAdded' => new \DateTime('2013-10-10'),
+            'body'      => 'A lightweight, flat-file, document database for PHP...',
+            'wordCount' => 7,
+        ));
+        $repo->store($page);
+        $page = new Document(array(
+            'title'     => 'An introduction to Flywheel',
+            'dateAdded' => new \DateTime('2013-10-10'),
+            'body'      => 'A lightweight, flat-file, document database for PHP...',
+            'wordCount' => 7,
+        ));
+        $repo->store($page);
 
         $this->releaseMutex();
         return self::EXIT_CODE_NORMAL;
