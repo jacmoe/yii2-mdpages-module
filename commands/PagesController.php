@@ -53,6 +53,10 @@ class PagesController extends Controller
 
     public function actionInit()
     {
+        if(file_exists(\Yii::getAlias($this->projectRootPath . '/content'))) {
+            $this->stderr("Execution terminated: content directory already cloned.\n", Console::FG_RED);
+            return self::EXIT_CODE_ERROR;
+        }
         //if (!is_file(__DIR__ . '/config.php')) {
         //    throw new Exception("The configuration file does not exist: $configFile");
         //}
@@ -64,11 +68,13 @@ class PagesController extends Controller
         }
         //$git = Yii::createObject('jacmoe\mdpages\components\yii2tech\Git');
 
-        $result = Shell::execute('(cd {projectRoot}; {binPath} -a)', [
-            '{binPath}' => 'ls',
-            '{projectRoot}' => '.',
+        $result = Shell::execute('(cd {projectRoot}; {binPath} clone {repository} content)', [
+            '{binPath}' => 'git',
+            '{projectRoot}' => \Yii::getAlias($this->projectRootPath),
+            '{repository}' => 'https://github.com/jacmoe/mdpages-pages.git',
         ]);
-        echo $result;
+        $log = $result->toString();
+        echo $log . "\n\n";
 
         $this->releaseMutex();
         return self::EXIT_CODE_NORMAL;

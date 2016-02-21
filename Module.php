@@ -58,9 +58,5 @@ class Module extends \yii\base\Module
 
         \Yii::setAlias('@pages', $this->pages_directory);
 
-        $dir = \Yii::getAlias($this->pages_directory);
-        if(!file_exists($dir)) {
-            \yii\helpers\FileHelper::createDirectory($dir);
-        }
     }
 }

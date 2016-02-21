@@ -24,6 +24,10 @@ class PageController extends Controller
      */
     public function actionIndex()
     {
+        $dir = \Yii::getAlias('@pages');
+        if(!file_exists($dir)) {
+            return $this->render('empty');
+        }
         return $this->render('index');
     }
 
@@ -34,9 +38,13 @@ class PageController extends Controller
      */
     public function actionView($id)
     {
+        $dir = \Yii::getAlias('@pages');
+        if(!file_exists($dir)) {
+            return $this->render('empty');
+        }
+
         $page_parts = explode('/', $id);
 
-        $dir = \Yii::getAlias('@pages');
         $file = $dir . '/' . $id . '.md';
         $metatags = array();
         if(file_exists($file)) {
