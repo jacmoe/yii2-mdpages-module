@@ -56,14 +56,11 @@ class PageController extends Controller
 
         $page_parts = explode('/', $id);
 
-        $file = $dir . '/' . $id . '.md';
-        $metatags = array();
-        if(file_exists($file)) {
-            $metaParser = new \jacmoe\mdpages\components\Meta;
-            $metatags = $metaParser->parse(file_get_contents($file));
-        }
+        $repo = $this->getFlywheelRepo();
 
-        return $this->render('view', array('metatags' => $metatags, 'parts' => $page_parts));
+        $page = $repo->query()->where('url', '==', $id)->execute();
+
+        return $this->render('view', array('page' => $page->first(), 'parts' => $page_parts));
     }
 
     protected function getFlywheelRepo()

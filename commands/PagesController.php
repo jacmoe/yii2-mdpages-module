@@ -105,6 +105,7 @@ class PagesController extends Controller
                 $values[$key] = $value;
             }
             $values['url'] = $url;
+            $values['file'] = substr($file, strlen(\Yii::getAlias('@pages')));
 
             $page = new Document($values);
             $repo->store($page);
