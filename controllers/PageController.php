@@ -57,10 +57,14 @@ class PageController extends Controller
         $page_parts = explode('/', $id);
 
         $repo = $this->getFlywheelRepo();
-
         $page = $repo->query()->where('url', '==', $id)->execute();
+        $result = $page->first();
 
-        return $this->render('view', array('page' => $page->first(), 'parts' => $page_parts));
+        if($result != null) {
+            return $this->render('view', array('page' => $result, 'parts' => $page_parts));
+        } else {
+            throw new \yii\web\NotFoundHttpException("Cound not find the page to render.");
+        }
     }
 
     protected function getFlywheelRepo()
