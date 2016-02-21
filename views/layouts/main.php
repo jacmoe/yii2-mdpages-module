@@ -39,7 +39,7 @@ use yii\widgets\Breadcrumbs;
                     echo Nav::widget([
                         'options' => ['class' => 'menu'],
                         'items' => [
-                            ['label' => 'Home', 'url' => ['default/index']],
+                            ['label' => 'Home', 'url' => yii\helpers\Url::to(array('page/view', 'id' => 'index'))],
                         ],
                     ]);
                     ?>
