@@ -51,6 +51,22 @@ class PagesController extends Controller
 
     public function actionUpdate()
     {
+        $module = \jacmoe\mdpages\Module::getInstance();
+
+        if (!$this->acquireMutex()) {
+            $this->stderr("Execution terminated: command is already running.\n", Console::FG_RED);
+            return self::EXIT_CODE_ERROR;
+        }
+
+        $git = Yii::createObject('jacmoe\mdpages\components\yii2tech\Git');
+
+        if($git->hasRemoteChanges(\Yii::getAlias($module->root_directory))) {
+            echo "has changes\n\n";
+        }
+
+        $this->releaseMutex();
+        return self::EXIT_CODE_NORMAL;
+
     }
 
     public function actionInit()
@@ -70,7 +86,6 @@ class PagesController extends Controller
             $this->stderr("Execution terminated: command is already running.\n", Console::FG_RED);
             return self::EXIT_CODE_ERROR;
         }
-        //$git = Yii::createObject('jacmoe\mdpages\components\yii2tech\Git');
 
         $result = Shell::execute('(cd {projectRoot}; {binPath} clone {repository} content)', [
             '{binPath}' => 'git',
