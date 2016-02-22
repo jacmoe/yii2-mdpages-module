@@ -9,13 +9,13 @@ class Module extends \yii\base\Module
 {
     public $repository_url = 'https://github.com/jacmoe/mdpages-pages.git';
 
-    public $root_directory = '@app';
+    public $root_directory = '@runtime';
 
     public $page_extension = '.md';
 
-    public $pages_directory = '@app/content';
+    public $pages_directory = '@runtime/content';
 
-    public $flywheel_config = '@app/flywheel';
+    public $flywheel_config = '@runtime/flywheel';
 
     public $flywheel_repo = 'pages';
 
