@@ -49,6 +49,22 @@ class PagesController extends Controller
     {
     }
 
+    protected function updateDB($files) {
+        $module = \jacmoe\mdpages\Module::getInstance();
+        $repo = $this->getFlywheelRepo();
+
+        $filename_pattern = '/\.md$/';
+
+        foreach ($files as $file) {
+            if (!preg_match($filename_pattern, $file)) {
+                continue;
+            }
+            // do something to each file
+            echo $file . "\n";
+        }
+
+    }
+
     public function actionUpdate()
     {
         $module = \jacmoe\mdpages\Module::getInstance();
@@ -72,12 +88,16 @@ class PagesController extends Controller
             ];
             $result = Shell::execute('(cd {projectRoot}; {binPath} diff --name-only HEAD {remote}/{branch})', $placeholders);
             $raw_files = $result->toString();
+
+            //$git->applyRemoteChanges(\Yii::getAlias($module->pages_directory), $log);
+            //echo $log;
+
             $files = explode("\n", $raw_files);
             array_shift($files);
             array_pop($files);
-            print_r($files);
-            $git->applyRemoteChanges(\Yii::getAlias($module->pages_directory), $log);
-            echo $log;
+
+            $this->updateDB($files);
+
         } else {
             echo "No changes detected\n\n";
         }
