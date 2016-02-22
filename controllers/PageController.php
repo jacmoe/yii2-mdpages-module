@@ -38,9 +38,19 @@ class PageController extends Controller
             return $this->render('empty');
         }
 
+        $parser = new GithubMarkdown();
+
+        $content = '';
+        $page_content = \Yii::getAlias('@pages') . '/README.md';
+        if(file_exists($page_content)) {
+            $content = $parser->parse(file_get_contents($page_content));
+        }
+
         $repo = $this->getFlywheelRepo();
         $pages = $repo->findAll();
-        return $this->render('index', array('pages' => $pages));
+
+        return $this->render('index', array('content' => $content, 'pages' => $pages));
+
     }
 
     /**
