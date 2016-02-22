@@ -45,43 +45,6 @@ class PagesController extends Controller
         ],
     ];
 
-    public function actionPayload()
-    {
-        $do_we_update = false;
-        try {
-            if (!isset($_POST['payload'])) {
-                echo "Works fine.";
-            } else {
-                $postBody = $_POST['payload'];
-                $payload = json_decode($postBody);
-
-                // check if the request comes from github server
-                $github_ips = array('207.97.227.253', '50.57.128.197', '108.171.174.178', '50.57.231.61');
-                if (in_array($_SERVER['REMOTE_ADDR'], $github_ips)) {
-                    $do_we_update = true;
-                    // foreach ($config['endpoints'] as $endpoint) {
-                    //     // check if the push came from the right repository and branch
-                    //     if ($payload->repository->url == 'https://github.com/' . $endpoint['repo']
-                    //         && $payload->ref == 'refs/heads/' . $endpoint['branch']) {
-                    //
-                    //             // execute update script, and record its output
-                    //             $do_we_update = true;
-                    //         }
-                    //     }
-                } else {
-                    throw new Exception("This does not appear to be a valid requests from Github.\n");
-                }
-            }
-        } catch ( Exception $e ) {
-            $msg = $e->getMessage();
-            echo $msg . ' ' . $e;
-        }
-        if($do_we_update) {
-            return $this->update();
-        }
-        return self::EXIT_CODE_NORMAL;
-    }
-
     protected function updateDB($files) {
         $module = \jacmoe\mdpages\Module::getInstance();
         $repo = $this->getFlywheelRepo();
