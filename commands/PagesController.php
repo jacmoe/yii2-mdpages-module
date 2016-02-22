@@ -1,9 +1,9 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+* @link http://www.yiiframework.com/
+* @copyright Copyright (c) 2008 Yii Software LLC
+* @license http://www.yiiframework.com/license/
+*/
 
 namespace jacmoe\mdpages\commands;
 
@@ -27,10 +27,10 @@ use JamesMoss\Flywheel\Document;
 class PagesController extends Controller
 {
     /**
-     * @var Mutex|array|string the mutex object or the application component ID of the mutex.
-     * After the controller object is created, if you want to change this property, you should only assign it
-     * with a mutex connection object.
-     */
+    * @var Mutex|array|string the mutex object or the application component ID of the mutex.
+    * After the controller object is created, if you want to change this property, you should only assign it
+    * with a mutex connection object.
+    */
     public $mutex = 'yii\mutex\FileMutex';
 
     protected $flywheel_config = null;
@@ -45,8 +45,41 @@ class PagesController extends Controller
         ],
     ];
 
-    public function actionIndex()
+    public function actionPayload()
     {
+        $do_we_update = false;
+        try {
+            if (!isset($_POST['payload'])) {
+                echo "Works fine.";
+            } else {
+                $postBody = $_POST['payload'];
+                $payload = json_decode($postBody);
+
+                // check if the request comes from github server
+                $github_ips = array('207.97.227.253', '50.57.128.197', '108.171.174.178', '50.57.231.61');
+                if (in_array($_SERVER['REMOTE_ADDR'], $github_ips)) {
+                    $do_we_update = true;
+                    // foreach ($config['endpoints'] as $endpoint) {
+                    //     // check if the push came from the right repository and branch
+                    //     if ($payload->repository->url == 'https://github.com/' . $endpoint['repo']
+                    //         && $payload->ref == 'refs/heads/' . $endpoint['branch']) {
+                    //
+                    //             // execute update script, and record its output
+                    //             $do_we_update = true;
+                    //         }
+                    //     }
+                } else {
+                    throw new Exception("This does not appear to be a valid requests from Github.\n");
+                }
+            }
+        } catch ( Exception $e ) {
+            $msg = $e->getMessage();
+            echo $msg . ' ' . $e;
+        }
+        if($do_we_update) {
+            return $this->update();
+        }
+        return self::EXIT_CODE_NORMAL;
     }
 
     protected function updateDB($files) {
@@ -120,6 +153,10 @@ class PagesController extends Controller
 
     public function actionUpdate()
     {
+        return $this->update();
+    }
+
+    protected function update() {
         $module = \jacmoe\mdpages\Module::getInstance();
 
         if(!file_exists(\Yii::getAlias($module->pages_directory))) {
@@ -188,61 +225,61 @@ class PagesController extends Controller
             '{binPath}' => 'git',
             '{projectRoot}' => \Yii::getAlias($module->root_directory),
             '{repository}' => $module->repository_url,
-        ]);
-        $log = $result->toString();
-        //echo $log . "\n\n";
+            ]);
+            $log = $result->toString();
+            //echo $log . "\n\n";
 
-        $repo = $this->getFlywheelRepo();
+            $repo = $this->getFlywheelRepo();
 
-        $filter = '\jacmoe\mdpages\components\ContentFileFilterIterator';
-        $files = Utility::getFiles(\Yii::getAlias('@pages'), $filter);
+            $filter = '\jacmoe\mdpages\components\ContentFileFilterIterator';
+            $files = Utility::getFiles(\Yii::getAlias('@pages'), $filter);
 
-        $this->updateDB($files);
+            $this->updateDB($files);
 
-        $this->releaseMutex();
-        return self::EXIT_CODE_NORMAL;
-    }
-    /**
-     * Acquires current action lock.
-     * @return boolean lock acquiring result.
-     */
-    protected function acquireMutex()
-    {
-        $this->mutex = Instance::ensure($this->mutex, Mutex::className());
-        return $this->mutex->acquire($this->composeMutexName());
-    }
-    /**
-     * Release current action lock.
-     * @return boolean lock release result.
-     */
-    protected function releaseMutex()
-    {
-        return $this->mutex->release($this->composeMutexName());
-    }
-    /**
-     * Composes the mutex name.
-     * @return string mutex name.
-     */
-    protected function composeMutexName()
-    {
-        return $this->className() . '::' . $this->action->getUniqueId();
-    }
+            $this->releaseMutex();
+            return self::EXIT_CODE_NORMAL;
+        }
+        /**
+        * Acquires current action lock.
+        * @return boolean lock acquiring result.
+        */
+        protected function acquireMutex()
+        {
+            $this->mutex = Instance::ensure($this->mutex, Mutex::className());
+            return $this->mutex->acquire($this->composeMutexName());
+        }
+        /**
+        * Release current action lock.
+        * @return boolean lock release result.
+        */
+        protected function releaseMutex()
+        {
+            return $this->mutex->release($this->composeMutexName());
+        }
+        /**
+        * Composes the mutex name.
+        * @return string mutex name.
+        */
+        protected function composeMutexName()
+        {
+            return $this->className() . '::' . $this->action->getUniqueId();
+        }
 
-    protected function getFlywheelRepo()
-    {
-        $module = \jacmoe\mdpages\Module::getInstance();
+        protected function getFlywheelRepo()
+        {
+            $module = \jacmoe\mdpages\Module::getInstance();
 
-        if(!isset($this->flywheel_config)) {
-            $config_dir = \Yii::getAlias($module->flywheel_config);
-            if(!file_exists($config_dir)) {
-                \yii\helpers\FileHelper::createDirectory($config_dir);
+            if(!isset($this->flywheel_config)) {
+                $config_dir = \Yii::getAlias($module->flywheel_config);
+                if(!file_exists($config_dir)) {
+                    \yii\helpers\FileHelper::createDirectory($config_dir);
+                }
+                $this->flywheel_config = new \JamesMoss\Flywheel\Config($config_dir);
             }
-            $this->flywheel_config = new \JamesMoss\Flywheel\Config($config_dir);
+            if(!isset($this->flywheel_repo)) {
+                $this->flywheel_repo = new \JamesMoss\Flywheel\Repository($module->flywheel_repo, $this->flywheel_config);
+            }
+            return $this->flywheel_repo;
         }
-        if(!isset($this->flywheel_repo)) {
-            $this->flywheel_repo = new \JamesMoss\Flywheel\Repository($module->flywheel_repo, $this->flywheel_config);
-        }
-        return $this->flywheel_repo;
-    }
 
-}
+    }
