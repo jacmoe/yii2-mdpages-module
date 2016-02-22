@@ -3,6 +3,7 @@
 namespace jacmoe\mdpages\controllers;
 
 use yii\web\Controller;
+use cebe\markdown\GithubMarkdown;
 
 /**
  * Default controller for the `mdpages` module
@@ -61,7 +62,17 @@ class PageController extends Controller
         $result = $page->first();
 
         if($result != null) {
-            return $this->render('view', array('page' => $result, 'parts' => $page_parts));
+
+            $parser = new GithubMarkdown();
+
+            $page_content = \Yii::getAlias('@pages') . $result->file;
+            if(!file_exists($page_content)) {
+                throw new \yii\web\NotFoundHttpException("Cound not find the page to render.");
+            }
+            $content = $parser->parse(file_get_contents($page_content));
+
+            return $this->render('view', array('content' => $content, 'page' => $result, 'parts' => $page_parts));
+
         } else {
             throw new \yii\web\NotFoundHttpException("Cound not find the page to render.");
         }
