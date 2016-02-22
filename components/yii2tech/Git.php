@@ -69,7 +69,7 @@ class Git extends VersionControlSystem
         $fetchResult = Shell::execute('(cd {projectRoot}; {binPath} fetch {remote})', $placeholders);
         $log = $fetchResult->toString() . "\n";
 
-        $result = Shell::execute('(cd {projectRoot}; {binPath} diff --numstat HEAD {remote}/{branch})', $placeholders);
+        $result = Shell::execute('(cd {projectRoot}; {binPath} diff --name-only HEAD {remote}/{branch})', $placeholders);
         $log .= $result->toString();
         return ($result->isOk() && !$result->isOutputEmpty());
     }

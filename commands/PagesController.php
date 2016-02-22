@@ -63,6 +63,19 @@ class PagesController extends Controller
         $log = '';
         if($git->hasRemoteChanges(\Yii::getAlias($module->pages_directory), $log)) {
             echo $log;
+
+            $placeholders = [
+                '{binPath}' => 'git',
+                '{projectRoot}' => \Yii::getAlias($module->pages_directory),
+                '{remote}' => 'origin',
+                '{branch}' => 'master',
+            ];
+            $result = Shell::execute('(cd {projectRoot}; {binPath} diff --name-only HEAD {remote}/{branch})', $placeholders);
+            $raw_files = $result->toString();
+            $files = explode("\n", $raw_files);
+            array_shift($files);
+            array_pop($files);
+            print_r($files);
             $git->applyRemoteChanges(\Yii::getAlias($module->pages_directory), $log);
             echo $log;
         } else {
