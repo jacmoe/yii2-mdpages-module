@@ -60,8 +60,13 @@ class PagesController extends Controller
 
         $git = Yii::createObject('jacmoe\mdpages\components\yii2tech\Git');
 
-        if($git->hasRemoteChanges(\Yii::getAlias($module->root_directory))) {
-            echo "has changes\n\n";
+        $log = '';
+        if($git->hasRemoteChanges(\Yii::getAlias($module->pages_directory), $log)) {
+            echo $log;
+            $git->applyRemoteChanges(\Yii::getAlias($module->pages_directory), $log);
+            echo $log;
+        } else {
+            echo "No changes detected\n\n";
         }
 
         $this->releaseMutex();
