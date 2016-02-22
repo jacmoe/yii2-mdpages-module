@@ -57,17 +57,32 @@ class PagesController extends Controller
 
         $metaParser = new Meta;
 
+        $file_action = '';
+
         foreach ($files as $file) {
             if (!preg_match($filename_pattern, $file)) {
                 continue;
             }
-            // do something to each file
-            //echo $file . "\n";
+
+            $file_field = substr($file, strlen(\Yii::getAlias('@pages')));
+
+            if(!file_exists($file)) {
+                // if the post exists, delete it
+                $page = $repo->query()->where('file', '==', $file_field)->execute();
+                $result = $page->first();
+                if($result != null) {
+                    echo "File $result->file exists - deleting ..\n";
+                    $repo->delete($result);
+                }
+                $file_action = 'deleted';
+                echo $file_field . ' was ' . $file_action . "\n";
+                continue;
+            }
 
             $metatags = array();
             $metatags = $metaParser->parse(file_get_contents($file));
 
-            $url = substr($file, strlen(\Yii::getAlias('@pages')));
+            $url = $file_field;
             $url = ltrim($url, '/');
             $raw_url = pathinfo($url);
             $url = $raw_url['filename'];
@@ -82,18 +97,22 @@ class PagesController extends Controller
                 $values[$key] = $value;
             }
             $values['url'] = $url;
-            $values['file'] = substr($file, strlen(\Yii::getAlias('@pages')));
+            $values['file'] = $file_field;
+
+            $file_action = 'created';
 
             // if the post exists, delete it
             $page = $repo->query()->where('file', '==', $values['file'])->execute();
             $result = $page->first();
             if($result != null) {
-                echo "File $result->file exists - deleting ..\n";
+                $file_action = 'updated';
                 $repo->delete($result);
             }
 
             $page = new Document($values);
             $repo->store($page);
+
+            echo $file_field . ' was ' . $file_action . "\n";
 
         }
 
@@ -102,6 +121,11 @@ class PagesController extends Controller
     public function actionUpdate()
     {
         $module = \jacmoe\mdpages\Module::getInstance();
+
+        if(!file_exists(\Yii::getAlias($module->pages_directory))) {
+            $this->stderr("Execution terminated: the repository to update does not exist - please run init first.\n", Console::FG_RED);
+            return self::EXIT_CODE_ERROR;
+        }
 
         if (!$this->acquireMutex()) {
             $this->stderr("Execution terminated: command is already running.\n", Console::FG_RED);
@@ -112,7 +136,7 @@ class PagesController extends Controller
 
         $log = '';
         if($git->hasRemoteChanges(\Yii::getAlias($module->pages_directory), $log)) {
-            echo $log;
+            //echo $log;
 
             $placeholders = [
                 '{binPath}' => 'git',
@@ -124,11 +148,11 @@ class PagesController extends Controller
             $raw_files = $result->toString();
 
             $git->applyRemoteChanges(\Yii::getAlias($module->pages_directory), $log);
-            echo $log;
+            //echo $log;
 
             $files = explode("\n", $raw_files);
-            array_shift($files);
-            array_pop($files);
+            array_shift($files); // the first entry is the command
+            array_pop($files); // the last entry is the exit code
 
             $to_update = array();
             foreach($files as $file) {
@@ -154,10 +178,6 @@ class PagesController extends Controller
             $this->stderr("Execution terminated: content directory already cloned.\n", Console::FG_RED);
             return self::EXIT_CODE_ERROR;
         }
-        //if (!is_file(__DIR__ . '/config.php')) {
-        //    throw new Exception("The configuration file does not exist: $configFile");
-        //}
-        //Yii::configure($this, require __DIR__ . '/config.php');
 
         if (!$this->acquireMutex()) {
             $this->stderr("Execution terminated: command is already running.\n", Console::FG_RED);
@@ -170,7 +190,7 @@ class PagesController extends Controller
             '{repository}' => $module->repository_url,
         ]);
         $log = $result->toString();
-        echo $log . "\n\n";
+        //echo $log . "\n\n";
 
         $repo = $this->getFlywheelRepo();
 
