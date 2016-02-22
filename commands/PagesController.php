@@ -55,12 +55,46 @@ class PagesController extends Controller
 
         $filename_pattern = '/\.md$/';
 
+        $metaParser = new Meta;
+
         foreach ($files as $file) {
             if (!preg_match($filename_pattern, $file)) {
                 continue;
             }
             // do something to each file
-            echo $file . "\n";
+            //echo $file . "\n";
+
+            $metatags = array();
+            $metatags = $metaParser->parse(file_get_contents($file));
+
+            $url = substr($file, strlen(\Yii::getAlias('@pages')));
+            $url = ltrim($url, '/');
+            $raw_url = pathinfo($url);
+            $url = $raw_url['filename'];
+            if($url == 'README') continue;
+            if($raw_url['dirname'] != '.') {
+                $url = $raw_url['dirname'] . '/' . $url;
+            }
+
+            $values = array();
+
+            foreach($metatags as $key => $value) {
+                $values[$key] = $value;
+            }
+            $values['url'] = $url;
+            $values['file'] = substr($file, strlen(\Yii::getAlias('@pages')));
+
+            // if the post exists, delete it
+            $page = $repo->query()->where('file', '==', $values['file'])->execute();
+            $result = $page->first();
+            if($result != null) {
+                echo "File $result->file exists - deleting ..\n";
+                $repo->delete($result);
+            }
+
+            $page = new Document($values);
+            $repo->store($page);
+
         }
 
     }
@@ -89,8 +123,8 @@ class PagesController extends Controller
             $result = Shell::execute('(cd {projectRoot}; {binPath} diff --name-only HEAD {remote}/{branch})', $placeholders);
             $raw_files = $result->toString();
 
-            //$git->applyRemoteChanges(\Yii::getAlias($module->pages_directory), $log);
-            //echo $log;
+            $git->applyRemoteChanges(\Yii::getAlias($module->pages_directory), $log);
+            echo $log;
 
             $files = explode("\n", $raw_files);
             array_shift($files);
@@ -135,35 +169,10 @@ class PagesController extends Controller
 
         $repo = $this->getFlywheelRepo();
 
-        $metaParser = new Meta;
         $filter = '\jacmoe\mdpages\components\ContentFileFilterIterator';
         $files = Utility::getFiles(\Yii::getAlias('@pages'), $filter);
 
-        foreach($files as $file) {
-            $metatags = array();
-            $metatags = $metaParser->parse(file_get_contents($file));
-
-            $url = substr($file, strlen(\Yii::getAlias('@pages')));
-            $url = ltrim($url, '/');
-            $raw_url = pathinfo($url);
-            $url = $raw_url['filename'];
-            if($url == 'README') continue;
-            if($raw_url['dirname'] != '.') {
-                $url = $raw_url['dirname'] . '/' . $url;
-            }
-
-            $values = array();
-
-            foreach($metatags as $key => $value) {
-                $values[$key] = $value;
-            }
-            $values['url'] = $url;
-            $values['file'] = substr($file, strlen(\Yii::getAlias('@pages')));
-
-            $page = new Document($values);
-            $repo->store($page);
-
-        }
+        $this->updateDB($files);
 
         $this->releaseMutex();
         return self::EXIT_CODE_NORMAL;
