@@ -130,7 +130,12 @@ class PagesController extends Controller
             array_shift($files);
             array_pop($files);
 
-            $this->updateDB($files);
+            $to_update = array();
+            foreach($files as $file) {
+                $to_update[] = \Yii::getAlias('@pages') . '/' . $file;
+            }
+
+            $this->updateDB($to_update);
 
         } else {
             echo "No changes detected\n\n";
