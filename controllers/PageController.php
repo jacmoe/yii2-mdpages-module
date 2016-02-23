@@ -2,6 +2,7 @@
 
 namespace jacmoe\mdpages\controllers;
 
+use Yii;
 use yii\web\Controller;
 use cebe\markdown\GithubMarkdown;
 
@@ -18,6 +19,8 @@ class PageController extends Controller
     protected $flywheel_config = null;
     protected $flywheel_repo = null;
 
+    public $defaultAction = 'view';
+
     public function actions()
     {
         return [
@@ -28,37 +31,11 @@ class PageController extends Controller
     }
 
     /**
-     * Renders the index view for the module
-     * @return string
-     */
-    public function actionIndex()
-    {
-        $dir = \Yii::getAlias('@pages');
-        if(!file_exists($dir)) {
-            return $this->render('empty');
-        }
-
-        $parser = new GithubMarkdown();
-
-        $content = '';
-        $page_content = \Yii::getAlias('@pages') . '/README.md';
-        if(file_exists($page_content)) {
-            $content = $parser->parse(file_get_contents($page_content));
-        }
-
-        $repo = $this->getFlywheelRepo();
-        $pages = $repo->findAll();
-
-        return $this->render('index', array('content' => $content, 'pages' => $pages));
-
-    }
-
-    /**
      * Renders a page
      * @param string $page_id id of page (url)
      * @return string
      */
-    public function actionView($id)
+    public function actionView($id = 'index')
     {
         $dir = \Yii::getAlias('@pages');
         if(!file_exists($dir)) {
@@ -72,6 +49,23 @@ class PageController extends Controller
         $result = $page->first();
 
         if($result != null) {
+
+            $view_params = array_slice((array)$result, 2);
+            foreach($view_params as $key => $value) {
+                Yii::$app->view->params[$key] = $value;
+            }
+            if(isset($result->description)) {
+                Yii::$app->view->registerMetaTag([
+                    'name' => 'description',
+                    'content' => $result->description
+                ]);
+            }
+            if(isset($result->keywords)) {
+                Yii::$app->view->registerMetaTag([
+                    'name' => 'keywords',
+                    'content' => $result->keywords
+                ]);
+            }
 
             $parser = new GithubMarkdown();
 
