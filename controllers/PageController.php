@@ -16,7 +16,16 @@ class PageController extends Controller
      */
     public $module;
 
+    /**
+     * Flywheel Config instance
+     * @var \JamesMoss\Flywheel\Config
+     */
     protected $flywheel_config = null;
+
+    /**
+     * Flywheel Repository instance
+     * @var \JamesMoss\Flywheel\Repository
+     */
     protected $flywheel_repo = null;
 
     public $defaultAction = 'view';
@@ -82,6 +91,10 @@ class PageController extends Controller
         }
     }
 
+    /**
+     *
+     * @return \JamesMoss\Flywheel\Repository
+     */
     protected function getFlywheelRepo()
     {
         if(!isset($this->flywheel_config)) {

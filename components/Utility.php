@@ -2,19 +2,7 @@
 
 namespace jacmoe\mdpages\components;
 
-class Pages {
-
-    public static function pageLink($page, $module_id = '') {
-        if($module_id == '') {
-            $module = \jacmoe\mdpages\Module::getInstance();
-            if(!is_null($module)) {
-                $module_id = $module->id;
-            }
-        }
-        if($module_id != '') {
-            return \yii\helpers\Url::to(array('/' . $module_id . '/page/view', 'id' => $page));
-        }
-    }
+class Utility {
 
     public static function execEnabled() {
         $disabled = explode(', ', ini_get('disable_functions'));
@@ -48,5 +36,5 @@ class Pages {
     }
 
     return $result;
-}
+    }
 }
