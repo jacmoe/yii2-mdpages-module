@@ -2,9 +2,9 @@
 
 namespace jacmoe\mdpages\components;
 
-class Utility {
+class Pages {
 
-    public static function page_link($page, $module_id = '') {
+    public static function pageLink($page, $module_id = '') {
         if($module_id == '') {
             $module = \jacmoe\mdpages\Module::getInstance();
             if(!is_null($module)) {
@@ -16,7 +16,7 @@ class Utility {
         }
     }
 
-    public static function exec_enabled() {
+    public static function execEnabled() {
         $disabled = explode(', ', ini_get('disable_functions'));
         return !in_array('exec', $disabled);
     }
