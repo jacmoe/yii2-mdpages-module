@@ -4,7 +4,11 @@ namespace jacmoe\mdpages\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
+use yii\helpers\FileHelper;
 use cebe\markdown\GithubMarkdown;
+use JamesMoss\Flywheel\Config;
+use JamesMoss\Flywheel\Repository;
 
 /**
  * Default controller for the `mdpages` module
@@ -41,12 +45,12 @@ class PageController extends Controller
 
     /**
      * Renders a page
-     * @param string $page_id id of page (url)
+     * @param string $id id of page (url)
      * @return string
      */
     public function actionView($id = 'index')
     {
-        $dir = \Yii::getAlias('@pages');
+        $dir = Yii::getAlias('@pages');
         if(!file_exists($dir)) {
             return $this->render('empty');
         }
@@ -78,16 +82,16 @@ class PageController extends Controller
 
             $parser = new GithubMarkdown();
 
-            $page_content = \Yii::getAlias('@pages') . $result->file;
+            $page_content = Yii::getAlias('@pages') . $result->file;
             if(!file_exists($page_content)) {
-                throw new \yii\web\NotFoundHttpException("Cound not find the page to render.");
+                throw new NotFoundHttpException("Cound not find the page to render.");
             }
             $content = $parser->parse(file_get_contents($page_content));
 
             return $this->render('view', array('content' => $content, 'page' => $result, 'parts' => $page_parts));
 
         } else {
-            throw new \yii\web\NotFoundHttpException("Cound not find the page to render.");
+            throw new NotFoundHttpException("Cound not find the page to render.");
         }
     }
 
@@ -95,17 +99,17 @@ class PageController extends Controller
      *
      * @return \JamesMoss\Flywheel\Repository
      */
-    protected function getFlywheelRepo()
+    public function getFlywheelRepo()
     {
         if(!isset($this->flywheel_config)) {
-            $config_dir = \Yii::getAlias($this->module->flywheel_config);
+            $config_dir = Yii::getAlias($this->module->flywheel_config);
             if(!file_exists($config_dir)) {
-                \yii\helpers\FileHelper::createDirectory($config_dir);
+                FileHelper::createDirectory($config_dir);
             }
-            $this->flywheel_config = new \JamesMoss\Flywheel\Config($config_dir);
+            $this->flywheel_config = new Config($config_dir);
         }
         if(!isset($this->flywheel_repo)) {
-            $this->flywheel_repo = new \JamesMoss\Flywheel\Repository($this->module->flywheel_repo, $this->flywheel_config);
+            $this->flywheel_repo = new Repository($this->module->flywheel_repo, $this->flywheel_config);
         }
         return $this->flywheel_repo;
     }

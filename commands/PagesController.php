@@ -7,11 +7,11 @@
 
 namespace jacmoe\mdpages\commands;
 
+use Yii;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\caching\Cache;
 use yii\console\Controller;
-use Yii;
 use yii\di\Instance;
 use yii\helpers\Console;
 use yii\helpers\FileHelper;
@@ -23,6 +23,8 @@ use jacmoe\mdpages\components\yii2tech\Shell;
 use jacmoe\mdpages\components\Utility;
 use jacmoe\mdpages\components\Meta;
 use JamesMoss\Flywheel\Document;
+use JamesMoss\Flywheel\Config;
+use JamesMoss\Flywheel\Repository;
 
 class PagesController extends Controller
 {
@@ -60,7 +62,7 @@ class PagesController extends Controller
                 continue;
             }
 
-            $file_field = substr($file, strlen(\Yii::getAlias('@pages')));
+            $file_field = substr($file, strlen(Yii::getAlias('@pages')));
 
             if(!file_exists($file)) {
                 // if the post exists, delete it
@@ -122,7 +124,7 @@ class PagesController extends Controller
     protected function update() {
         $module = \jacmoe\mdpages\Module::getInstance();
 
-        if(!file_exists(\Yii::getAlias($module->pages_directory))) {
+        if(!file_exists(Yii::getAlias($module->pages_directory))) {
             $this->stderr("Execution terminated: the repository to update does not exist - please run init first.\n", Console::FG_RED);
             return self::EXIT_CODE_ERROR;
         }
@@ -135,19 +137,19 @@ class PagesController extends Controller
         $git = Yii::createObject('jacmoe\mdpages\components\yii2tech\Git');
 
         $log = '';
-        if($git->hasRemoteChanges(\Yii::getAlias($module->pages_directory), $log)) {
+        if($git->hasRemoteChanges(Yii::getAlias($module->pages_directory), $log)) {
             //echo $log;
 
             $placeholders = [
                 '{binPath}' => 'git',
-                '{projectRoot}' => \Yii::getAlias($module->pages_directory),
+                '{projectRoot}' => Yii::getAlias($module->pages_directory),
                 '{remote}' => 'origin',
                 '{branch}' => 'master',
             ];
             $result = Shell::execute('(cd {projectRoot}; {binPath} diff --name-only HEAD {remote}/{branch})', $placeholders);
             $raw_files = $result->toString();
 
-            $git->applyRemoteChanges(\Yii::getAlias($module->pages_directory), $log);
+            $git->applyRemoteChanges(Yii::getAlias($module->pages_directory), $log);
             //echo $log;
 
             $files = explode("\n", $raw_files);
@@ -156,7 +158,7 @@ class PagesController extends Controller
 
             $to_update = array();
             foreach($files as $file) {
-                $to_update[] = \Yii::getAlias('@pages') . '/' . $file;
+                $to_update[] = Yii::getAlias('@pages') . '/' . $file;
             }
 
             $this->updateDB($to_update);
@@ -174,7 +176,7 @@ class PagesController extends Controller
     {
         $module = \jacmoe\mdpages\Module::getInstance();
 
-        if(file_exists(\Yii::getAlias($module->pages_directory))) {
+        if(file_exists(Yii::getAlias($module->pages_directory))) {
             $this->stderr("Execution terminated: content directory already cloned.\n", Console::FG_RED);
             return self::EXIT_CODE_ERROR;
         }
@@ -186,7 +188,7 @@ class PagesController extends Controller
 
         $result = Shell::execute('(cd {projectRoot}; {binPath} clone {repository} content)', [
             '{binPath}' => 'git',
-            '{projectRoot}' => \Yii::getAlias($module->root_directory),
+            '{projectRoot}' => Yii::getAlias($module->root_directory),
             '{repository}' => $module->repository_url,
             ]);
             $log = $result->toString();
@@ -195,7 +197,7 @@ class PagesController extends Controller
             $repo = $this->getFlywheelRepo();
 
             $filter = '\jacmoe\mdpages\components\ContentFileFilterIterator';
-            $files = Utility::getFiles(\Yii::getAlias('@pages'), $filter);
+            $files = Utility::getFiles(Yii::getAlias('@pages'), $filter);
 
             $this->updateDB($files);
 
@@ -233,14 +235,14 @@ class PagesController extends Controller
             $module = \jacmoe\mdpages\Module::getInstance();
 
             if(!isset($this->flywheel_config)) {
-                $config_dir = \Yii::getAlias($module->flywheel_config);
+                $config_dir = Yii::getAlias($module->flywheel_config);
                 if(!file_exists($config_dir)) {
-                    \yii\helpers\FileHelper::createDirectory($config_dir);
+                    FileHelper::createDirectory($config_dir);
                 }
-                $this->flywheel_config = new \JamesMoss\Flywheel\Config($config_dir);
+                $this->flywheel_config = new Config($config_dir);
             }
             if(!isset($this->flywheel_repo)) {
-                $this->flywheel_repo = new \JamesMoss\Flywheel\Repository($module->flywheel_repo, $this->flywheel_config);
+                $this->flywheel_repo = new Repository($module->flywheel_repo, $this->flywheel_config);
             }
             return $this->flywheel_repo;
         }

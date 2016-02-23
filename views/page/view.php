@@ -3,7 +3,7 @@ use jacmoe\mdpages\helpers\Page;
 /* @var $this yii\web\View */
 $this->title = isset($page->title) ? $page->title : 'Untitled';
 if($parts[0] != 'index')
-    $this->params['breadcrumbs'][] = ['label' => 'Pages', 'url' => Page::link('index')];
+    $this->params['breadcrumbs'][] = ['label' => Page::title('index'), 'url' => Page::url('index')];
 if(count($parts) > 1) {
     for($i = 0; $i < count($parts)-1; $i++) {
         $this->params['breadcrumbs'][] = ['label' => $parts[$i], 'url' => ['index']];
