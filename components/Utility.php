@@ -4,6 +4,18 @@ namespace jacmoe\mdpages\components;
 
 class Utility {
 
+    public static function page_link($page, $module_id = '') {
+        if($module_id == '') {
+            $module = \jacmoe\mdpages\Module::getInstance();
+            if(!is_null($module)) {
+                $module_id = $module->id;
+            }
+        }
+        if($module_id != '') {
+            return \yii\helpers\Url::to(array('/' . $module_id . '/page/view', 'id' => $page));
+        }
+    }
+
     public static function exec_enabled() {
         $disabled = explode(', ', ini_get('disable_functions'));
         return !in_array('exec', $disabled);
