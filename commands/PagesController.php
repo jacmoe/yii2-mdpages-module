@@ -146,14 +146,6 @@ class PagesController extends Controller
     */
     public function actionUpdate()
     {
-        return $this->update();
-    }
-
-    /**
-    * [update description]
-    * @return [type] [description]
-    */
-    protected function update() {
         $module = \jacmoe\mdpages\Module::getInstance();
 
         if(!is_dir(Yii::getAlias($module->pages_directory))) {
@@ -304,6 +296,34 @@ class PagesController extends Controller
             $this->flywheel_repo = new Repository($module->flywheel_repo, $this->flywheel_config);
         }
         return $this->flywheel_repo;
+    }
+
+    /**
+     * This is for testing out new commands
+     */
+    public function actionTest()
+    {
+        $module = \jacmoe\mdpages\Module::getInstance();
+        $result = Shell::execute('(cd {projectRoot}; {binPath} log {args} {file})', [
+            '{binPath}' => 'git',
+            '{projectRoot}' => Yii::getAlias($module->pages_directory),
+            '{args}' => '--pretty=format:%an, %ae',
+            '{file}' => 'README.md',
+            ]);
+        $committers = $result->toString();
+        $committers = explode("\n", $committers);
+        array_shift($committers); // the first entry is the command
+        array_pop($committers); // the last entry is the exit code
+
+        $committer_array = array();
+        foreach($committers as $committer) {
+            $commits = explode(",", $committer);
+            if(count($commits) == 2) {
+                $committer_array[$commits[1]] = $commits[0];
+            }
+        }
+        print_r($committer_array);
+
     }
 
 }
