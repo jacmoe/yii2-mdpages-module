@@ -104,14 +104,15 @@ class PageController extends Controller
         $repo = $this->getFlywheelRepo();
         $posts = $repo->query()->orderBy('updated ASC')->limit(50,0)->execute();
 
+        //TODO: create some configurables for this..
         $feed = new Feed();
         $feed->title = 'Pages Feed';
         $feed->link = Url::to('');
         $feed->selfLink = Url::to(['rss'], true);
         $feed->description = 'Pages News';
         $feed->language = 'en';
-        $feed->setWebMaster('sam@rmcreative.ru', 'Alexander Makarov');
-        $feed->setManagingEditor('sam@rmcreative.ru', 'Alexander Makarov');
+        //$feed->setWebMaster('sam@rmcreative.ru', 'Alexander Makarov');
+        //$feed->setManagingEditor('sam@rmcreative.ru', 'Alexander Makarov');
         foreach ($posts as $post) {
             $item = new Item();
             $item->title = $post->title;
@@ -119,7 +120,7 @@ class PageController extends Controller
             $item->guid = Url::to(['page/view', 'id' => $post->url], true);
             $item->description = $post->description;
             $item->pubDate = date_timestamp_get(Page::dateToDateTime($post->updated));
-            $item->setAuthor('noreply@yiifeed.com', 'YiiFeed');
+            $item->setAuthor('noreply@yiifeed.com', 'Pages Feed');
             $feed->addItem($item);
         }
         $feed->render();
