@@ -52,4 +52,23 @@ class Page {
         throw new NotSupportedException("Can't be called outside of jacmoe\mdpages module.");
     }
 
+    /**
+     * Returns an array of pages
+     * @return array an array of pages
+     */
+    public static function pages() {
+        $module = \jacmoe\mdpages\Module::getInstance();
+        if(!is_null($module)) {
+            $controller = \Yii::$app->controller;
+            if(!is_null($controller)) {
+                if($controller->id == 'page') {
+                    $repo = $controller->getFlywheelRepo();
+                    return $repo->findAll();
+                }
+                throw new NotSupportedException("Can only be used when active controller is 'page'.");
+            }
+        }
+        throw new NotSupportedException("Can't be called outside of jacmoe\mdpages module.");
+    }
+
 }
