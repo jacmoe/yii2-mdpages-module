@@ -6,7 +6,7 @@ if($parts[0] != 'index')
     $this->params['breadcrumbs'][] = ['label' => Page::title('index'), 'url' => Page::url('index')];
 if(count($parts) > 1) {
     for($i = 0; $i < count($parts)-1; $i++) {
-        $this->params['breadcrumbs'][] = ['label' => $parts[$i], 'url' => ['index']];
+        $this->params['breadcrumbs'][] = ['label' => $parts[$i], 'url' => Page::url($parts[$i])];
     }
 }
 $this->params['breadcrumbs'][] = $this->title;
