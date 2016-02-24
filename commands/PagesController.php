@@ -124,7 +124,7 @@ class PagesController extends Controller
     protected function update() {
         $module = \jacmoe\mdpages\Module::getInstance();
 
-        if(!file_exists(Yii::getAlias($module->pages_directory))) {
+        if(!is_dir(Yii::getAlias($module->pages_directory))) {
             $this->stderr("Execution terminated: the repository to update does not exist - please run init first.\n", Console::FG_RED);
             return self::EXIT_CODE_ERROR;
         }
@@ -163,6 +163,14 @@ class PagesController extends Controller
 
             $this->updateDB($to_update);
 
+            $image_dir = Yii::getAlias('@pages/images');
+            if(is_dir($image_dir)) {
+                if(!is_link(Yii::getAlias('@web/images'))) {
+                    echo "Creating images symlink\n\n";
+                    symlink($image_dir, Yii::getAlias('@web/images'));
+                }
+            }
+
         } else {
             echo "No changes detected\n\n";
         }
@@ -176,7 +184,7 @@ class PagesController extends Controller
     {
         $module = \jacmoe\mdpages\Module::getInstance();
 
-        if(file_exists(Yii::getAlias($module->pages_directory))) {
+        if(is_dir(Yii::getAlias($module->pages_directory))) {
             $this->stderr("Execution terminated: content directory already cloned.\n", Console::FG_RED);
             return self::EXIT_CODE_ERROR;
         }
@@ -200,6 +208,14 @@ class PagesController extends Controller
             $files = Utility::getFiles(Yii::getAlias('@pages'), $filter);
 
             $this->updateDB($files);
+
+            $image_dir = Yii::getAlias('@pages/images');
+            if(is_dir($image_dir)) {
+                if(!is_link(Yii::getAlias('@web/images'))) {
+                    echo "Creating images symlink\n\n";
+                    symlink($image_dir, Yii::getAlias('@web/images'));
+                }
+            }
 
             $this->releaseMutex();
             return self::EXIT_CODE_NORMAL;
