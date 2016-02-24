@@ -45,6 +45,7 @@ class Page {
                             return $result->title;
                         }
                     }
+                    return 'page not found';
                 }
                 throw new NotSupportedException("Can only be used when active controller is 'page'.");
             }
@@ -56,14 +57,18 @@ class Page {
      * Returns an array of pages
      * @return array an array of pages
      */
-    public static function pages() {
+    public static function pages($order_by = '') {
         $module = \jacmoe\mdpages\Module::getInstance();
         if(!is_null($module)) {
             $controller = \Yii::$app->controller;
             if(!is_null($controller)) {
                 if($controller->id == 'page') {
                     $repo = $controller->getFlywheelRepo();
-                    return $repo->findAll();
+                    if(empty($order_by)) {
+                        return $repo->findAll();
+                    } else {
+                        return $repo->query()->orderBy($order_by)->execute();
+                    }
                 }
                 throw new NotSupportedException("Can only be used when active controller is 'page'.");
             }
