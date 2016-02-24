@@ -212,9 +212,9 @@ class PagesController extends Controller
         protected function createImageSymlink() {
             $image_dir = Yii::getAlias('@pages') . '/images';
             if(is_dir($image_dir)) {
-                if(!is_link(Yii::getAlias('@web').'/images')) {
+                if(!is_link(Yii::getAlias('@app/web').'/images')) {
                     echo "Creating images symlink\n\n";
-                    symlink($image_dir, Yii::getAlias('@web').'/images');
+                    symlink($image_dir, Yii::getAlias('@app/web').'/images');
                 }
             }
         }
