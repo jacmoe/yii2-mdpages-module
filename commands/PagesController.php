@@ -35,9 +35,22 @@ class PagesController extends Controller
     */
     public $mutex = 'yii\mutex\FileMutex';
 
+    /**
+     * [$flywheel_config description]
+     * @var [type]
+     */
     protected $flywheel_config = null;
+
+    /**
+     * [$flywheel_repo description]
+     * @var [type]
+     */
     protected $flywheel_repo = null;
 
+    /**
+     * [$versionControlSystems description]
+     * @var [type]
+     */
     public $versionControlSystems = [
         '.git' => [
             'class' => 'jacmoe\mdpages\components\yii2tech\Git'
@@ -109,8 +122,14 @@ class PagesController extends Controller
             $result = $page->first();
             if($result != null) {
                 $file_action = 'updated';
+                $values['created'] = $result->created;
                 $repo->delete($result);
             }
+
+            if($file_action == 'created') {
+                $values['created'] = new \DateTime('@' . time());
+            }
+            $values['updated'] = new \DateTime('@' . time());
 
             $page = new Document($values);
             $repo->store($page);

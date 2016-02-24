@@ -6,9 +6,13 @@ use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\helpers\FileHelper;
+use yii\helpers\Url;
 use cebe\markdown\GithubMarkdown;
 use JamesMoss\Flywheel\Config;
 use JamesMoss\Flywheel\Repository;
+use jacmoe\mdpages\helpers\Page;
+use jacmoe\mdpages\components\feed\Feed;
+use jacmoe\mdpages\components\feed\Item;
 
 /**
  * Default controller for the `mdpages` module
@@ -93,6 +97,33 @@ class PageController extends Controller
         } else {
             throw new NotFoundHttpException("Cound not find the page to render.");
         }
+    }
+
+    public function actionRss()
+    {
+        $repo = $this->getFlywheelRepo();
+        $posts = $repo->query()->orderBy('updated ASC')->limit(50,0)->execute();
+
+        $feed = new Feed();
+        $feed->title = 'Pages Feed';
+        $feed->link = Url::to('');
+        $feed->selfLink = Url::to(['rss'], true);
+        $feed->description = 'Pages News';
+        $feed->language = 'en';
+        $feed->setWebMaster('sam@rmcreative.ru', 'Alexander Makarov');
+        $feed->setManagingEditor('sam@rmcreative.ru', 'Alexander Makarov');
+        foreach ($posts as $post) {
+            $item = new Item();
+            $item->title = $post->title;
+            $item->link = Url::to(['page/view', 'id' => $post->url], true);
+            $item->guid = Url::to(['page/view', 'id' => $post->url], true);
+            $item->description = $post->description;
+            $item->pubDate = date_timestamp_get(Page::dateToDateTime($post->updated));
+            $item->setAuthor('noreply@yiifeed.com', 'YiiFeed');
+            $feed->addItem($item);
+        }
+        $feed->render();
+
     }
 
     /**
