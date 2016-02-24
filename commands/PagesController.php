@@ -47,6 +47,11 @@ class PagesController extends Controller
         ],
     ];
 
+    /**
+    * [updateDB description]
+    * @param  [type] $files [description]
+    * @return [type]        [description]
+    */
     protected function updateDB($files) {
         $module = \jacmoe\mdpages\Module::getInstance();
         $repo = $this->getFlywheelRepo();
@@ -116,11 +121,19 @@ class PagesController extends Controller
 
     }
 
+    /**
+    * [actionUpdate description]
+    * @return [type] [description]
+    */
     public function actionUpdate()
     {
         return $this->update();
     }
 
+    /**
+    * [update description]
+    * @return [type] [description]
+    */
     protected function update() {
         $module = \jacmoe\mdpages\Module::getInstance();
 
@@ -174,6 +187,10 @@ class PagesController extends Controller
 
     }
 
+    /**
+    * [actionInit description]
+    * @return [type] [description]
+    */
     public function actionInit()
     {
         $module = \jacmoe\mdpages\Module::getInstance();
@@ -193,73 +210,81 @@ class PagesController extends Controller
             '{projectRoot}' => Yii::getAlias($module->root_directory),
             '{repository}' => $module->repository_url,
             ]);
-            $log = $result->toString();
-            //echo $log . "\n\n";
+        $log = $result->toString();
+        //echo $log . "\n\n";
 
-            $repo = $this->getFlywheelRepo();
+        $repo = $this->getFlywheelRepo();
 
-            $filter = '\jacmoe\mdpages\components\ContentFileFilterIterator';
-            $files = Utility::getFiles(Yii::getAlias('@pages'), $filter);
+        $filter = '\jacmoe\mdpages\components\ContentFileFilterIterator';
+        $files = Utility::getFiles(Yii::getAlias('@pages'), $filter);
 
-            $this->updateDB($files);
+        $this->updateDB($files);
 
-            $this->createImageSymlink();
+        $this->createImageSymlink();
 
-            $this->releaseMutex();
-            return self::EXIT_CODE_NORMAL;
-        }
-
-        protected function createImageSymlink() {
-            $image_dir = Yii::getAlias('@pages') . '/images';
-            if(is_dir($image_dir)) {
-                if(!is_link(Yii::getAlias('@app/web').'/images')) {
-                    echo "Creating images symlink\n\n";
-                    symlink($image_dir, Yii::getAlias('@app/web').'/images');
-                }
-            }
-        }
-
-        /**
-        * Acquires current action lock.
-        * @return boolean lock acquiring result.
-        */
-        protected function acquireMutex()
-        {
-            $this->mutex = Instance::ensure($this->mutex, Mutex::className());
-            return $this->mutex->acquire($this->composeMutexName());
-        }
-        /**
-        * Release current action lock.
-        * @return boolean lock release result.
-        */
-        protected function releaseMutex()
-        {
-            return $this->mutex->release($this->composeMutexName());
-        }
-        /**
-        * Composes the mutex name.
-        * @return string mutex name.
-        */
-        protected function composeMutexName()
-        {
-            return $this->className() . '::' . $this->action->getUniqueId();
-        }
-
-        protected function getFlywheelRepo()
-        {
-            $module = \jacmoe\mdpages\Module::getInstance();
-
-            if(!isset($this->flywheel_config)) {
-                $config_dir = Yii::getAlias($module->flywheel_config);
-                if(!file_exists($config_dir)) {
-                    FileHelper::createDirectory($config_dir);
-                }
-                $this->flywheel_config = new Config($config_dir);
-            }
-            if(!isset($this->flywheel_repo)) {
-                $this->flywheel_repo = new Repository($module->flywheel_repo, $this->flywheel_config);
-            }
-            return $this->flywheel_repo;
-        }
-
+        $this->releaseMutex();
+        return self::EXIT_CODE_NORMAL;
     }
+
+    /**
+    * [createImageSymlink description]
+    * @return [type] [description]
+    */
+    protected function createImageSymlink() {
+        $image_dir = Yii::getAlias('@pages') . '/images';
+        if(is_dir($image_dir)) {
+            if(!is_link(Yii::getAlias('@app/web').'/images')) {
+                echo "Creating images symlink\n\n";
+                symlink($image_dir, Yii::getAlias('@app/web').'/images');
+            }
+        }
+    }
+
+    /**
+    * Acquires current action lock.
+    * @return boolean lock acquiring result.
+    */
+    protected function acquireMutex()
+    {
+        $this->mutex = Instance::ensure($this->mutex, Mutex::className());
+        return $this->mutex->acquire($this->composeMutexName());
+    }
+    /**
+    * Release current action lock.
+    * @return boolean lock release result.
+    */
+    protected function releaseMutex()
+    {
+        return $this->mutex->release($this->composeMutexName());
+    }
+    /**
+    * Composes the mutex name.
+    * @return string mutex name.
+    */
+    protected function composeMutexName()
+    {
+        return $this->className() . '::' . $this->action->getUniqueId();
+    }
+
+    /**
+     * [getFlywheelRepo description]
+     * @return [type] [description]
+     */
+    protected function getFlywheelRepo()
+    {
+        $module = \jacmoe\mdpages\Module::getInstance();
+
+        if(!isset($this->flywheel_config)) {
+            $config_dir = Yii::getAlias($module->flywheel_config);
+            if(!file_exists($config_dir)) {
+                FileHelper::createDirectory($config_dir);
+            }
+            $this->flywheel_config = new Config($config_dir);
+        }
+        if(!isset($this->flywheel_repo)) {
+            $this->flywheel_repo = new Repository($module->flywheel_repo, $this->flywheel_config);
+        }
+        return $this->flywheel_repo;
+    }
+
+}
