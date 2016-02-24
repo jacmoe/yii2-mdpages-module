@@ -163,13 +163,7 @@ class PagesController extends Controller
 
             $this->updateDB($to_update);
 
-            $image_dir = Yii::getAlias('@pages/images');
-            if(is_dir($image_dir)) {
-                if(!is_link(Yii::getAlias('@web/images'))) {
-                    echo "Creating images symlink\n\n";
-                    symlink($image_dir, Yii::getAlias('@web/images'));
-                }
-            }
+            $this->createImageSymlink();
 
         } else {
             echo "No changes detected\n\n";
@@ -209,17 +203,22 @@ class PagesController extends Controller
 
             $this->updateDB($files);
 
-            $image_dir = Yii::getAlias('@pages/images');
-            if(is_dir($image_dir)) {
-                if(!is_link(Yii::getAlias('@web/images'))) {
-                    echo "Creating images symlink\n\n";
-                    symlink($image_dir, Yii::getAlias('@web/images'));
-                }
-            }
+            $this->createImageSymlink();
 
             $this->releaseMutex();
             return self::EXIT_CODE_NORMAL;
         }
+
+        protected function createImageSymlink() {
+            $image_dir = Yii::getAlias('@pages') . '/images';
+            if(is_dir($image_dir)) {
+                if(!is_link(Yii::getAlias('@web').'/images')) {
+                    echo "Creating images symlink\n\n";
+                    symlink($image_dir, Yii::getAlias('@web').'/images');
+                }
+            }
+        }
+
         /**
         * Acquires current action lock.
         * @return boolean lock acquiring result.
