@@ -9,6 +9,12 @@ class Module extends \yii\base\Module
 {
     public $repository_url = '';
 
+    public $github_token = '';
+
+    public $github_owner = '';
+
+    public $github_repo = '';
+
     public $root_directory = '@runtime';
 
     public $page_extension = '.md';
