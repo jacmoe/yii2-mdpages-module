@@ -299,15 +299,12 @@ class PagesController extends Controller
     }
 
     /**
-     * This is for testing out new commands
+     * [runCurl description]
+     * @param  [type] $curl_url [description]
+     * @param  [type] $module   [description]
+     * @return [type]           [description]
      */
-    public function actionTest()
-    {
-        $module = \jacmoe\mdpages\Module::getInstance();
-
-        $file = 'README.md';
-
-        $curl_url = "https://api.github.com/repos/$module->github_owner/$module->github_repo/commits?path=$file";
+    private function runCurl($curl_url, $module) {
 
         $curl_token_auth = 'Authorization: token ' . $module->github_token;
 
@@ -316,14 +313,70 @@ class PagesController extends Controller
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Awesome-Octocat-App', $curl_token_auth));
         $output = curl_exec($ch);
         curl_close($ch);
+        return $output;
+    }
+
+    /**
+     * [committersFromFile description]
+     * @param  [type] $file [description]
+     * @return [type]       [description]
+     */
+    private function committersFromFile($file, $module) {
+
+        $curl_url = "https://api.github.com/repos/$module->github_owner/$module->github_repo/commits?path=$file";
+
+        $output = $this->runCurl($curl_url, $module);
 
         $commits = json_decode($output);
+
+        $contributors = array();
+
         foreach($commits as $commit) {
-            echo $commit->author->login . "\n";
-            echo $commit->author->avatar_url . "\n";
-            echo $commit->author->html_url . "\n";
-            echo $commit->commit->committer->name . "\n" . $commit->commit->committer->email . "\n\n";
+            $contributor = array();
+            $contributor['login'] = $commit->author->login;
+            $contributor['avatar_url'] = $commit->author->avatar_url;
+            $contributor['html_url'] = $commit->author->html_url;
+            $contributor['name'] = $commit->commit->committer->name;
+            $contributor['email'] = $commit->commit->committer->email;
+            $contributors[] = $contributor;
         }
+        $unique_contributors = $this->unique_multidim_array($contributors, 'login');
+
+        return $unique_contributors;
+    }
+
+    /**
+     * [unique_multidim_array description]
+     * @param  [type] $array [description]
+     * @param  [type] $key   [description]
+     * @return [type]        [description]
+     */
+    private function unique_multidim_array($array, $key)
+    {
+        $temp_array = array();
+        $i = 0;
+        $key_array = array();
+
+        foreach($array as $val) {
+            if (!in_array($val[$key], $key_array)) {
+                $key_array[$i] = $val[$key];
+                $temp_array[$i] = $val;
+            }
+            $i++;
+        }
+        return $temp_array;
+    }
+
+    /**
+     * This is for testing out new commands
+     */
+    public function actionTest()
+    {
+        $module = \jacmoe\mdpages\Module::getInstance();
+
+        $out = $this->committersFromFile('README.md', $module);
+
+        print_r($out);
 
     }
 
