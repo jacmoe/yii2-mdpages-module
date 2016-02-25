@@ -304,25 +304,26 @@ class PagesController extends Controller
     public function actionTest()
     {
         $module = \jacmoe\mdpages\Module::getInstance();
-        $result = Shell::execute('(cd {projectRoot}; {binPath} log {args} {file})', [
-            '{binPath}' => 'git',
-            '{projectRoot}' => Yii::getAlias($module->pages_directory),
-            '{args}' => '--pretty=format:%an, %ae',
-            '{file}' => 'README.md',
-            ]);
-        $committers = $result->toString();
-        $committers = explode("\n", $committers);
-        array_shift($committers); // the first entry is the command
-        array_pop($committers); // the last entry is the exit code
 
-        $committer_array = array();
-        foreach($committers as $committer) {
-            $commits = explode(",", $committer);
-            if(count($commits) == 2) {
-                $committer_array[$commits[1]] = $commits[0];
-            }
+        $file = 'README.md';
+
+        $curl_url = "https://api.github.com/repos/$module->github_owner/$module->github_repo/commits?path=$file";
+
+        $curl_token_auth = 'Authorization: token ' . $module->github_token;
+
+        $ch = curl_init($curl_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('User-Agent: Awesome-Octocat-App', $curl_token_auth));
+        $output = curl_exec($ch);
+        curl_close($ch);
+
+        $commits = json_decode($output);
+        foreach($commits as $commit) {
+            echo $commit->author->login . "\n";
+            echo $commit->author->avatar_url . "\n";
+            echo $commit->author->html_url . "\n";
+            echo $commit->commit->committer->name . "\n" . $commit->commit->committer->email . "\n\n";
         }
-        print_r($committer_array);
 
     }
 
