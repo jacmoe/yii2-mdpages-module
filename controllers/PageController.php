@@ -102,7 +102,7 @@ class PageController extends Controller
     public function actionRss()
     {
         $repo = $this->getFlywheelRepo();
-        $posts = $repo->query()->orderBy('updated')->limit(50,0)->execute();
+        $posts = $repo->query()->orderBy('updated DESC')->limit(50,0)->execute();
 
         //TODO: create some configurables for this..
         $feed = new Feed();
