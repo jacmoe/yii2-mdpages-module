@@ -131,6 +131,8 @@ class PagesController extends Controller
             }
             $values['updated'] = new \DateTime('@' . time());
 
+            $values['contributors'] = $this->committersFromFile(ltrim($values['file'],'/'), $module);
+
             $page = new Document($values);
             $repo->store($page);
 
