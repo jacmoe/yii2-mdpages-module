@@ -91,7 +91,7 @@ class PagesController extends Controller
                     $repo->delete($result);
                 }
                 $file_action = 'deleted';
-                echo $file_field . ' was ' . $file_action . "\n";
+                $this->stdout($file_field . ' was ' . $file_action . "\n");
                 continue;
             }
 
@@ -127,16 +127,16 @@ class PagesController extends Controller
             }
 
             if($file_action == 'created') {
-                $values['created'] = new \DateTime('@' . time());
+                $values['created'] = time();
             }
-            $values['updated'] = new \DateTime('@' . time());
+            $values['updated'] = time();
 
             $values['contributors'] = $this->committersFromFile(ltrim($values['file'],'/'), $module);
 
             $page = new Document($values);
             $repo->store($page);
 
-            echo $file_field . ' was ' . $file_action . "\n";
+            $this->stdout($file_field . ' was ' . $file_action . "\n");
 
         }
 
@@ -192,7 +192,7 @@ class PagesController extends Controller
             $this->createImageSymlink();
 
         } else {
-            echo "No changes detected\n\n";
+            $this->stdout("No changes detected\n\n", Console::FG_GREEN);
         }
 
         $this->releaseMutex();
@@ -209,7 +209,7 @@ class PagesController extends Controller
         $module = \jacmoe\mdpages\Module::getInstance();
 
         if(is_dir(Yii::getAlias($module->pages_directory))) {
-            $this->stderr("Execution terminated: content directory already cloned.\n", Console::FG_RED);
+            $this->stdout("Content directory already cloned - terminating.\n", Console::FG_GREEN);
             return self::EXIT_CODE_ERROR;
         }
 
@@ -247,7 +247,7 @@ class PagesController extends Controller
         $image_dir = Yii::getAlias('@pages') . '/images';
         if(is_dir($image_dir)) {
             if(!is_link(Yii::getAlias('@app/web').'/images')) {
-                echo "Creating images symlink\n\n";
+                $this->stdout("Creating images symlink\n\n", Console::FG_GREEN);
                 symlink($image_dir, Yii::getAlias('@app/web').'/images');
             }
         }
@@ -370,16 +370,26 @@ class PagesController extends Controller
     }
 
     /**
+     * Removes content and data directories
+     */
+    public function actionCleanout()
+    {
+        $module = \jacmoe\mdpages\Module::getInstance();
+
+        if($this->confirm('Delete content and data directories ?')) {
+            FileHelper::removeDirectory(Yii::getAlias($module->pages_directory));
+            FileHelper::removeDirectory(Yii::getAlias($module->flywheel_config));
+            $this->stdout("\nContent and data directories deleted.\n", Console::FG_GREEN);
+        } else {
+            $this->stdout("Nothing was deleted - command interrupted.\n", Console::FG_GREEN);
+        }
+    }
+
+    /**
      * This is for testing out new commands
      */
     public function actionTest()
     {
-        $module = \jacmoe\mdpages\Module::getInstance();
-
-        $out = $this->committersFromFile('README.md', $module);
-
-        print_r($out);
-
     }
 
 }

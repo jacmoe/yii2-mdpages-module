@@ -76,13 +76,4 @@ class Page {
         throw new NotSupportedException("Can't be called outside of jacmoe\mdpages module.");
     }
 
-    /**
-     * Converts a JSON date object to a PHP DateTime object
-     * @param  Object $date     A post date object (ie $post->created)
-     * @return DateTime         The converted date
-     */
-    public static function dateToDateTime($date) {
-        return new \DateTime($date->date, new \DateTimeZone($date->timezone));
-    }
-
 }

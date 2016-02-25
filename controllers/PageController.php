@@ -119,7 +119,7 @@ class PageController extends Controller
             $item->link = Url::to(['page/view', 'id' => $post->url], true);
             $item->guid = Url::to(['page/view', 'id' => $post->url], true);
             $item->description = $post->description;
-            $item->pubDate = date_timestamp_get(Page::dateToDateTime($post->updated));
+            $item->pubDate = $post->updated;
             $item->setAuthor('noreply@yiifeed.com', 'Pages Feed');
             $feed->addItem($item);
         }
