@@ -7,12 +7,13 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
-use cebe\markdown\GithubMarkdown;
+//use cebe\markdown\GithubMarkdown;
 use JamesMoss\Flywheel\Config;
 use JamesMoss\Flywheel\Repository;
 use jacmoe\mdpages\helpers\Page;
 use jacmoe\mdpages\components\feed\Feed;
 use jacmoe\mdpages\components\feed\Item;
+use jacmoe\mdpages\components\MdPagesMarkdown;
 
 /**
  * Default controller for the `mdpages` module
@@ -84,7 +85,7 @@ class PageController extends Controller
                 ]);
             }
 
-            $parser = new GithubMarkdown();
+            $parser = new MdPagesMarkdown();
 
             $page_content = Yii::getAlias('@pages') . $result->file;
             if(!file_exists($page_content)) {
