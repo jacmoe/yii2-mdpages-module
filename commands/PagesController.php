@@ -329,6 +329,7 @@ class PagesController extends Controller
 
         $output = $this->runCurl($curl_url, $module);
 
+        //TODO: what to do if the output is invalid?
         $commits = json_decode($output);
 
         $contributors = array();

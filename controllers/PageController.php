@@ -7,7 +7,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
-use cebe\markdown\GithubMarkdown;
+use jacmoe\mdpages\components\mdpagedown\MdPagedown;
 use JamesMoss\Flywheel\Config;
 use JamesMoss\Flywheel\Repository;
 use jacmoe\mdpages\helpers\Page;
@@ -84,7 +84,7 @@ class PageController extends Controller
                 ]);
             }
 
-            $parser = new GithubMarkdown();
+            $parser = new MdPagedown();
 
             $page_content = Yii::getAlias('@pages') . $result->file;
             if(!file_exists($page_content)) {
