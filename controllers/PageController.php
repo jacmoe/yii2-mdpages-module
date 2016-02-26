@@ -145,7 +145,6 @@ class PageController extends Controller
         $breadcrumbs = array();
 
         foreach($page_parts as $part) {
-
             $page = $repo->query()->where('url', '==', $part)->execute();
             $result = $page->first();
             if($result != null) {
