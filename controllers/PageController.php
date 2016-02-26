@@ -60,30 +60,20 @@ class PageController extends Controller
             return $this->render('empty');
         }
 
-        $page_parts = explode('/', $id);
-
         $repo = $this->getFlywheelRepo();
         $page = $repo->query()->where('url', '==', $id)->execute();
         $result = $page->first();
 
         if($result != null) {
 
+            $breadcrumbs = $this->buildBreadcrumbs($result->url);
+
             $view_params = array_slice((array)$result, 2);
             foreach($view_params as $key => $value) {
                 Yii::$app->view->params[$key] = $value;
             }
-            if(isset($result->description)) {
-                Yii::$app->view->registerMetaTag([
-                    'name' => 'description',
-                    'content' => $result->description
-                ]);
-            }
-            if(isset($result->keywords)) {
-                Yii::$app->view->registerMetaTag([
-                    'name' => 'keywords',
-                    'content' => $result->keywords
-                ]);
-            }
+
+            $this->setMetatags($result);
 
             $parser = new MdPagesMarkdown();
 
@@ -93,7 +83,7 @@ class PageController extends Controller
             }
             $content = $parser->parse(file_get_contents($page_content));
 
-            return $this->render('view', array('content' => $content, 'page' => $result, 'parts' => $page_parts));
+            return $this->render('view', array('content' => $content, 'page' => $result, 'breadcrumbs' => $breadcrumbs));
 
         } else {
             throw new NotFoundHttpException("Cound not find the page to render.");
@@ -145,6 +135,42 @@ class PageController extends Controller
             $this->flywheel_repo = new Repository($this->module->flywheel_repo, $this->flywheel_config);
         }
         return $this->flywheel_repo;
+    }
+
+    private function buildBreadcrumbs($file_url) {
+        $page_parts = explode('/', $file_url);
+
+        $repo = $this->getFlywheelRepo();
+
+        $breadcrumbs = array();
+
+        foreach($page_parts as $part) {
+
+            $page = $repo->query()->where('url', '==', $part)->execute();
+            $result = $page->first();
+            if($result != null) {
+                $breadcrumbs[] = array('label' => $result->title, 'url' => $result->url);
+            } else {
+                $breadcrumbs[] = array('label' => $part);
+            }
+        }
+
+        return $breadcrumbs;
+    }
+
+    private function setMetatags($page) {
+        if(isset($page->description)) {
+            Yii::$app->view->registerMetaTag([
+                'name' => 'description',
+                'content' => $page->description
+            ]);
+        }
+        if(isset($page->keywords)) {
+            Yii::$app->view->registerMetaTag([
+                'name' => 'keywords',
+                'content' => $page->keywords
+            ]);
+        }
     }
 
 }
