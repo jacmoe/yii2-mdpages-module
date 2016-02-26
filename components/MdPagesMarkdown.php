@@ -1,9 +1,9 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
+* @link http://www.yiiframework.com/
+* @copyright Copyright (c) 2008 Yii Software LLC
+* @license http://www.yiiframework.com/license/
+*/
 
 namespace jacmoe\mdpages\components;
 
@@ -15,18 +15,43 @@ use yii\helpers\Inflector;
 use yii\helpers\Markdown;
 
 /**
- * A Markdown helper with support for class reference links.
- *
- * @author Carsten Brandt <mail@cebe.cc>
- * @since 2.0
- */
+* A Markdown helper with support for class reference links.
+*
+* @author Carsten Brandt <mail@cebe.cc>
+* @since 2.0
+*/
 class MdPagesMarkdown extends GithubMarkdown
 {
-    use MdPagesMarkdownTrait;
+    use inline\WikilinkTrait;
 
     /**
-     * @var array translation for guide block types
-     */
+    * @inheritDoc
+    */
+    protected $escapeCharacters = [
+        // from Markdown
+        '\\', // backslash
+        '`', // backtick
+        '*', // asterisk
+        '_', // underscore
+        '{', '}', // curly braces
+        '[', ']', // square brackets
+        '(', ')', // parentheses
+        '#', // hash mark
+        '+', // plus sign
+        '-', // minus sign (hyphen)
+        '.', // dot
+        '!', // exclamation mark
+        '<', '>',
+        // added by GithubMarkdown
+        ':', // colon
+        '|', // pipe
+        // added by MdPagesMarkdown
+        '[[', ']]', // double square brackets
+    ];
+
+    /**
+    * @var array translation for guide block types
+    */
     public static $blockTranslations = [];
 
     protected $renderingContext;
@@ -34,17 +59,17 @@ class MdPagesMarkdown extends GithubMarkdown
     protected $headings = [];
 
     /**
-     * @return array the headlines of this document
-     * @since 2.0.5
-     */
+    * @return array the headlines of this document
+    * @since 2.0.5
+    */
     public function getHeadings()
     {
         return $this->headings;
     }
 
     /**
-     * @inheritDoc
-     */
+    * @inheritDoc
+    */
     protected function prepare()
     {
         parent::prepare();
@@ -64,24 +89,24 @@ class MdPagesMarkdown extends GithubMarkdown
         if (!empty($this->headings)) {
             $toc = [];
             foreach ($this->headings as $heading)
-                $toc[] = '<li>' . Html::a(strip_tags($heading['title']), '#' . $heading['id']) . '</li>';
+            $toc[] = '<li>' . Html::a(strip_tags($heading['title']), '#' . $heading['id']) . '</li>';
             $toc = '<div class="toc"><ol>' . implode("\n", $toc) . "</ol></div>\n";
             if (strpos($content, '</h1>') !== false)
-                $content = str_replace('</h1>', "</h1>\n" . $toc, $content);
+            $content = str_replace('</h1>', "</h1>\n" . $toc, $content);
             else
-                $content = $toc . $content;
+            $content = $toc . $content;
         }
         return $content;
     }
 
     /**
-     * @var Highlighter
-     */
+    * @var Highlighter
+    */
     private static $highlighter;
 
     /**
-     * @inheritdoc
-     */
+    * @inheritdoc
+    */
     protected function renderCode($block)
     {
         if (self::$highlighter === null) {
@@ -92,7 +117,7 @@ class MdPagesMarkdown extends GithubMarkdown
                 'css', 'less', 'scss',
                 'javascript', 'json', 'markdown',
                 'php', 'sql', 'twig', 'xml',
-            ]);
+                ]);
         }
         try {
             if (isset($block['language'])) {
@@ -109,13 +134,13 @@ class MdPagesMarkdown extends GithubMarkdown
     }
 
     /**
-     * Highlights code
-     *
-     * @param string $code code to highlight
-     * @param string $language language of the code to highlight
-     * @return string HTML of highlighted code
-     * @deprecated since 2.0.5 this method is not used anymore, highlight.php is used for highlighting
-     */
+    * Highlights code
+    *
+    * @param string $code code to highlight
+    * @param string $language language of the code to highlight
+    * @return string HTML of highlighted code
+    * @deprecated since 2.0.5 this method is not used anymore, highlight.php is used for highlighting
+    */
     public static function highlight($code, $language)
     {
         if ($language !== 'php') {
@@ -138,8 +163,8 @@ class MdPagesMarkdown extends GithubMarkdown
     }
 
     /**
-     * @inheritDoc
-     */
+    * @inheritDoc
+    */
     protected function renderHeadline($block)
     {
         $content = $this->renderAbsy($block['content']);
@@ -170,56 +195,19 @@ class MdPagesMarkdown extends GithubMarkdown
     }
 
     /**
-     * @inheritdoc
-     */
+    * @inheritdoc
+    */
     protected function renderLink($block)
     {
         $result = parent::renderLink($block);
 
-/*
+        /*
         // add special syntax for linking to the guide
         $result = preg_replace_callback('/href="guide:([A-z0-9-.#]+)"/i', function($match) {
-            return 'href="' . static::$renderer->generateGuideUrl($match[1]) . '"';
+        return 'href="' . static::$renderer->generateGuideUrl($match[1]) . '"';
         }, $result, 1);
-*/
+        */
         return $result;
     }
 
-    protected function translateBlockType($type)
-    {
-        $key = ucfirst($type) . ':';
-        if (isset(static::$blockTranslations[$key])) {
-            $translation = static::$blockTranslations[$key];
-        } else {
-            $translation = $key;
-        }
-        return "$translation ";
-    }
-
-    /**
-     * Converts markdown into HTML
-     *
-     * @param string $content
-     * @param TypeDoc $context
-     * @param boolean $paragraph
-     * @return string
-     */
-    public static function process($content, $context = null, $paragraph = false)
-    {
-        if (!isset(Markdown::$flavors['mdpages'])) {
-            Markdown::$flavors['mdpages'] = new static;
-        }
-/*
-        if (is_string($context)) {
-            $context = static::$renderer->apiContext->getType($context);
-        }
-*/
-        Markdown::$flavors['mdpages']->renderingContext = $context;
-
-        if ($paragraph) {
-            return Markdown::processParagraph($content, 'mdpages');
-        } else {
-            return Markdown::process($content, 'mdpages');
-        }
-    }
 }
