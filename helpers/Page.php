@@ -8,20 +8,22 @@ class Page {
 
     /**
      * Returns a url to a page
-     * @param  $id                  the page id to generate a link for
+     * @param  string $id           the page id to generate a link for
      * @param  string $module_id    if not passed the function will
      *                              try to get the module id by itself
      * @return string               the generated url
      */
     public static function url($id, $module_id = '') {
+        $absolute_urls = false;
         if($module_id == '') {
             $module = \jacmoe\mdpages\Module::getInstance();
             if(!is_null($module)) {
                 $module_id = $module->id;
+                $absolute_urls = $module->absolute_wikilinks;
             }
         }
         if($module_id != '') {
-            return Url::to(array('/' . $module_id . '/page/view', 'id' => $id));
+            return Url::to(array('/' . $module_id . '/page/view', 'id' => $id), $absolute_urls);
         }
     }
 

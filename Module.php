@@ -7,23 +7,65 @@ namespace jacmoe\mdpages;
 */
 class Module extends \yii\base\Module
 {
+    /**
+     * Link to the Github repository where the content is stored
+     * @var string  http://github.com/owner/repo.git
+     */
     public $repository_url = '';
 
+    /**
+     * Github token used when calling the Github API
+     * @var string
+     */
     public $github_token = '';
 
+    /**
+     * Repository owner
+     * @var string  The 'owner' part of http://github.com/owner/repo
+     */
     public $github_owner = '';
 
+    /**
+    * Repository name
+    * @var string  The 'repo' part of http://github.com/owner/repo
+     */
     public $github_repo = '';
 
+    /**
+     * The directory in which the wiki content is stored
+     * @var string
+     */
     public $root_directory = '@runtime';
 
+    /**
+     * The extension used to indicate markdown files
+     * @var string
+     */
     public $page_extension = '.md';
 
+    /**
+     * The directory where the wiki content is stored
+     * @var string
+     */
     public $pages_directory = '@runtime/content';
 
+    /**
+     * The directory where the Flywheel database is written
+     * @var string
+     */
     public $flywheel_config = '@runtime/flywheel';
 
+    /**
+     * The name of the Flywheel database
+     * @var string
+     */
     public $flywheel_repo = 'pages';
+
+    /**
+     * Use absolute links for wiki links
+     * @var string
+     */
+    public $absolute_wikilinks = false;
 
     /**
     * @inheritdoc
