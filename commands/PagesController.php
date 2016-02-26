@@ -20,7 +20,6 @@ use yii\mail\BaseMailer;
 use yii\mutex\Mutex;
 
 use jacmoe\mdpages\components\yii2tech\Shell;
-use jacmoe\mdpages\components\Utility;
 use jacmoe\mdpages\components\Meta;
 use JamesMoss\Flywheel\Document;
 use JamesMoss\Flywheel\Config;
@@ -228,8 +227,9 @@ class PagesController extends Controller
 
         $repo = $this->getFlywheelRepo();
 
-        $filter = '\jacmoe\mdpages\components\ContentFileFilterIterator';
-        $files = Utility::getFiles(Yii::getAlias('@pages'), $filter);
+        $files = FileHelper::findFiles(Yii::getAlias('@pages'), [
+            'only' => ['*' . $module->page_extension],
+        ]);
 
         $this->updateDB($files);
 
@@ -373,7 +373,7 @@ class PagesController extends Controller
     /**
      * Removes content and data directories
      */
-    public function actionCleanout()
+    public function actionClearAll()
     {
         $module = \jacmoe\mdpages\Module::getInstance();
 
