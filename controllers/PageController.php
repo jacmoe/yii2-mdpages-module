@@ -98,8 +98,8 @@ class PageController extends Controller
         //TODO: create some configurables for this..
         $feed = new Feed();
         $feed->title = 'Pages Feed';
-        $feed->link = Url::to('');
-        $feed->selfLink = Url::to(['rss'], true);
+        $feed->link = Url::to(['page/rss'], true);
+        $feed->selfLink = Url::to(['page/rss'], true);
         $feed->description = 'Pages News';
         $feed->language = 'en';
         //$feed->setWebMaster('sam@rmcreative.ru', 'Alexander Makarov');
@@ -137,6 +137,11 @@ class PageController extends Controller
         return $this->flywheel_repo;
     }
 
+    /**
+     * [buildBreadcrumbs description]
+     * @param  [type] $file_url [description]
+     * @return [type]           [description]
+     */
     private function buildBreadcrumbs($file_url) {
         $page_parts = explode('/', $file_url);
 
@@ -174,6 +179,10 @@ class PageController extends Controller
         return $breadcrumbs;
     }
 
+    /**
+     * [setMetatags description]
+     * @param [type] $page [description]
+     */
     private function setMetatags($page) {
         if(isset($page->description)) {
             Yii::$app->view->registerMetaTag([

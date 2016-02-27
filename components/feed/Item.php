@@ -93,11 +93,11 @@ class Item
         $out.=Feed::renderTag('description', Feed::cdata($this->description), 3);
         $out.=Feed::renderTag('guid', $this->guid, 3);
         $out.=Feed::renderTag('pubDate', Feed::convertTime($this->pubDate), 3);
-        $out.=Feed::renderTag(
-            'author',
-            $this->author[0].' ('.$this->author[1].')',
-            2
-        );
+        // $out.=Feed::renderTag(
+        //     'author',
+        //     $this->author[0].' ('.$this->author[1].')',
+        //     2
+        // );
 
         return $out."\t\t</item>\n";
     }
