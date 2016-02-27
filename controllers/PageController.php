@@ -7,7 +7,6 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
-//use cebe\markdown\GithubMarkdown;
 use JamesMoss\Flywheel\Config;
 use JamesMoss\Flywheel\Repository;
 use jacmoe\mdpages\helpers\Page;

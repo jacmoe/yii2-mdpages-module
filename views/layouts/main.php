@@ -4,7 +4,7 @@
 /* @var $content string */
 
 use yii\helpers\Html;
-use jacmoe\mdpages\components\Nav;
+//use jacmoe\mdpages\components\Nav;
 use yii\widgets\Breadcrumbs;
 
 ?>
@@ -34,15 +34,7 @@ use yii\widgets\Breadcrumbs;
                     </ul>
                 </div>
                 <div class="top-bar-right">
-                    <?php
-                    $module = Yii::$app->controller->module ? Yii::$app->controller->module->id : null;
-                    echo Nav::widget([
-                        'options' => ['class' => 'menu'],
-                        'items' => [
-                            ['label' => 'Home', 'url' => yii\helpers\Url::to(array('page/view', 'id' => 'index'))],
-                        ],
-                    ]);
-                    ?>
+Nav was here
                 </div>
             </div>
         </div>
