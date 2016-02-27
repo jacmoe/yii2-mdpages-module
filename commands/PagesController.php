@@ -25,6 +25,9 @@ use JamesMoss\Flywheel\Document;
 use JamesMoss\Flywheel\Config;
 use JamesMoss\Flywheel\Repository;
 
+/**
+ * The command-line interface to the mdpages module
+ */
 class PagesController extends Controller
 {
     /**

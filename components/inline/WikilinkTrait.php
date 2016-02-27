@@ -14,7 +14,7 @@ use JamesMoss\Flywheel\Repository;
 use jacmoe\mdpages\helpers\Page;
 
 /**
-* Adds strikeout inline elements
+* Adds wikilink inline elements
 */
 trait WikilinkTrait
 {
