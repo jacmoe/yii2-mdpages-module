@@ -167,7 +167,7 @@ class PageController extends Controller
                     Yii::$app->view->params['breadcrumbs'][] = array('label' => $result->title, 'url' => Url::to(array('page/view', 'id' => $result->url)));
                 }
             } else {
-                Yii::$app->view->params['breadcrumbs'][] = array('label' => $crumb);
+                Yii::$app->view->params['breadcrumbs'][] = array('label' => $crumb, 'class' => 'disabled');
             }
         }
 
