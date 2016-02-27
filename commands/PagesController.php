@@ -90,6 +90,9 @@ class PagesController extends Controller
                 $result = $page->first();
                 if($result != null) {
                     echo "File $result->file exists - deleting ..\n";
+
+                    $this->deleteCachekeys($module, $result->url);
+
                     $repo->delete($result);
                 }
                 $file_action = 'deleted';
@@ -126,6 +129,9 @@ class PagesController extends Controller
                 $file_action = 'updated';
                 $values['created'] = $result->created;
                 $values['updated'] = $update_updated ? time() : $result->updated;
+
+                $this->deleteCachekeys($module, $result->url);
+
                 $repo->delete($result);
             }
 
@@ -143,6 +149,24 @@ class PagesController extends Controller
 
         }
 
+    }
+
+    /**
+     * [deleteCachekeys description]
+     * @param  [type] $module [description]
+     * @param  [type] $url    [description]
+     */
+    private function deleteCachekeys($module, $url) {
+        $breadcrumbs_cacheKey = 'breadcrumbs-' . $url;
+        $breadcrumbs_cache = $module->cache->get($breadcrumbs_cacheKey);
+        if ($breadcrumbs_cache) {
+            $module->cache->delete($breadcrumbs_cacheKey);
+        }
+        $content_cacheKey = 'content-' . $url;
+        $content_cache = $module->cache->get($content_cacheKey);
+        if ($content_cache) {
+            $module->cache->delete($content_cacheKey);
+        }
     }
 
     /**
