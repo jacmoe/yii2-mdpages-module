@@ -70,7 +70,7 @@ trait WikilinkTrait
         $result = $page->first();
 
         if($result != null) {
-            return Html::a(empty($title) ? $result->title : $title, Url::to(['page/view', 'id' => $result->url], $module->absolute_wikilinks));
+            return Html::a(empty($title) ? $result->title : $title, Url::to(['/' . $module->id . '/page/view', 'id' => $result->url], $module->absolute_wikilinks));
         } else {
             return '[[' . $link . ']]';
         }
