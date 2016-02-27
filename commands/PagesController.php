@@ -60,11 +60,11 @@ class PagesController extends Controller
     ];
 
     /**
-    * [updateDB description]
-    * @param  [type] $files [description]
-    * @return [type]        [description]
-    */
-    protected function updateDB($files) {
+     * Updates the Flywheel database
+     * @param  array $files          List of files to update
+     * @param  bool $update_updated  If true, then updates the updated post field
+     */
+    protected function updateDB($files, $update_updated = true) {
         $module = \jacmoe\mdpages\Module::getInstance();
         $repo = $this->getFlywheelRepo();
 
@@ -122,13 +122,14 @@ class PagesController extends Controller
             if($result != null) {
                 $file_action = 'updated';
                 $values['created'] = $result->created;
+                $values['updated'] = $update_updated ? time() : $result->updated;
                 $repo->delete($result);
             }
 
             if($file_action == 'created') {
                 $values['created'] = time();
+                $values['updated'] = time();
             }
-            $values['updated'] = time();
 
             $values['contributors'] = $this->committersFromFile(ltrim($values['file'],'/'), $module);
 
@@ -142,8 +143,10 @@ class PagesController extends Controller
     }
 
     /**
-    * [actionUpdate description]
-    * @return [type] [description]
+    * Checks if there are remote changes in the content repository
+    * and if there are it applies those changes
+    * and updates the database
+    * @return integer success or fail
     */
     public function actionUpdate()
     {
@@ -200,8 +203,9 @@ class PagesController extends Controller
     }
 
     /**
-    * [actionInit description]
-    * @return [type] [description]
+    * Initializes the content directory and Flywheel database
+    * from scratch
+    * @return integer exit code (success or error)
     */
     public function actionInit()
     {
@@ -237,6 +241,44 @@ class PagesController extends Controller
 
         $this->releaseMutex();
         return self::EXIT_CODE_NORMAL;
+    }
+
+
+    /**
+     * Rebuilds the Flywheel database without updating the
+     * updated date
+     */
+    public function actionRebuild() {
+        $module = \jacmoe\mdpages\Module::getInstance();
+
+        if(!is_dir(Yii::getAlias($module->pages_directory))) {
+            $this->stderr("Execution terminated: the repository to update does not exist - please run init first.\n", Console::FG_RED);
+            return self::EXIT_CODE_ERROR;
+        }
+
+        if (!$this->acquireMutex()) {
+            $this->stderr("Execution terminated: command is already running.\n", Console::FG_RED);
+            return self::EXIT_CODE_ERROR;
+        }
+
+        $repo = $this->getFlywheelRepo();
+
+        $files = FileHelper::findFiles(Yii::getAlias('@pages'), [
+            'only' => ['*' . $module->page_extension],
+        ]);
+
+        $this->updateDB($files, false);
+
+        $this->releaseMutex();
+        return self::EXIT_CODE_NORMAL;
+    }
+
+    /**
+     * Creates a symlink from the images directory in content to the
+     * public web directory
+     */
+    public function actionSymlink() {
+        $this->createImageSymlink();
     }
 
     /**
