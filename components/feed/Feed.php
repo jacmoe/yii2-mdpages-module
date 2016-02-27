@@ -180,16 +180,16 @@ class Feed
         $out.=Feed::renderTag('docs', $this->docs, 2);
         $out.=Feed::renderTag('generator', $this->generator, 2);
 
-        $out.=Feed::renderTag(
-            'managingEditor',
-            $this->managingEditor[0].' ('.$this->managingEditor[1].')',
-            2
-        );
-        $out.=Feed::renderTag(
-            'webMaster',
-            $this->webMaster[0].' ('.$this->webMaster[1].')',
-            2
-        );
+        // $out.=Feed::renderTag(
+        //     'managingEditor',
+        //     $this->managingEditor[0].' ('.$this->managingEditor[1].')',
+        //     2
+        // );
+        // $out.=Feed::renderTag(
+        //     'webMaster',
+        //     $this->webMaster[0].' ('.$this->webMaster[1].')',
+        //     2
+        // );
 
         foreach ($this->items as $item) {
             $out.=$item;
