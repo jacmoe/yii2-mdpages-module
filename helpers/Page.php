@@ -59,7 +59,7 @@ class Page {
      * Returns an array of pages
      * @return array an array of pages
      */
-    public static function pages($order_by = '') {
+    public static function pages($order_by = '', $where = null, $limit = 50, $offset = 0) {
         $module = \jacmoe\mdpages\Module::getInstance();
         if(!is_null($module)) {
             $controller = \Yii::$app->controller;
@@ -67,9 +67,17 @@ class Page {
                 if($controller->id == 'page') {
                     $repo = $controller->getFlywheelRepo();
                     if(empty($order_by)) {
-                        return $repo->findAll();
+                        if(isset($where)) {
+                            return $repo->query()->limit($limit, $offset)->where($where)->execute();
+                        } else {
+                            return $repo->query()->limit($limit, $offset)->execute();
+                        }
                     } else {
-                        return $repo->query()->orderBy($order_by)->execute();
+                        if(isset($where)) {
+                            return $repo->query()->limit($limit, $offset)->where($where)->orderBy($order_by)->execute();
+                        } else {
+                            return $repo->query()->limit($limit, $offset)->orderBy($order_by)->execute();
+                        }
                     }
                 }
                 throw new NotSupportedException("Can only be used when active controller is 'page'.");
