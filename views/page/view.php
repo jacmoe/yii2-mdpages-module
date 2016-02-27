@@ -3,9 +3,6 @@ use jacmoe\mdpages\helpers\Page;
 use yii\helpers\Html;
 /* @var $this yii\web\View */
 $this->title = isset($page->title) ? $page->title : 'Untitled';
-echo '<pre>';
-print_r($breadcrumbs);
-echo '</pre>';
 ?>
 <div class="content">
     <?= $content; ?>

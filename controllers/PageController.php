@@ -66,7 +66,7 @@ class PageController extends Controller
 
         if($result != null) {
 
-            $breadcrumbs = $this->buildBreadcrumbs($result->url);
+            $this->buildBreadcrumbs($result->url);
 
             $view_params = array_slice((array)$result, 2);
             foreach($view_params as $key => $value) {
@@ -83,7 +83,7 @@ class PageController extends Controller
             }
             $content = $parser->parse(file_get_contents($page_content));
 
-            return $this->render('view', array('content' => $content, 'page' => $result, 'breadcrumbs' => $breadcrumbs));
+            return $this->render('view', array('content' => $content, 'page' => $result));
 
         } else {
             throw new NotFoundHttpException("Cound not find the page to render.");
@@ -144,13 +144,30 @@ class PageController extends Controller
 
         $breadcrumbs = array();
 
+        $i = 0;
+        $out = '';
+        $crumbs = array();
         foreach($page_parts as $part) {
-            $page = $repo->query()->where('url', '==', $part)->execute();
+            $out = $out . '/' . $page_parts[$i];
+            $crumbs[] = substr($out, 1);
+            $i++;
+        }
+
+        if($file_url != 'index') {
+            Yii::$app->view->params['breadcrumbs'][] = array('label' => Page::title('index'), 'url' => Url::to(array('page/view', 'id' => 'index')));
+        }
+
+        foreach($crumbs as $crumb) {
+            $page = $repo->query()->where('url', '==', $crumb)->execute();
             $result = $page->first();
             if($result != null) {
-                $breadcrumbs[] = array('label' => $result->title, 'url' => $result->url);
+                if($result->url == $crumbs[count($page_parts)-1]) {
+                    Yii::$app->view->params['breadcrumbs'][] = array('label' => $result->title);
+                } else {
+                    Yii::$app->view->params['breadcrumbs'][] = array('label' => $result->title, 'url' => Url::to(array('page/view', 'id' => $result->url)));
+                }
             } else {
-                $breadcrumbs[] = array('label' => $part);
+                Yii::$app->view->params['breadcrumbs'][] = array('label' => $crumb);
             }
         }
 
