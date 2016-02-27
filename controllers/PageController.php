@@ -75,13 +75,19 @@ class PageController extends Controller
 
             $this->setMetatags($result);
 
-            $parser = new MdPagesMarkdown();
+            $cacheKey = 'content-' . $id;
+            $content = $this->module->cache->get($cacheKey);
+            if (!$content) {
+                $parser = new MdPagesMarkdown();
 
-            $page_content = Yii::getAlias('@pages') . $result->file;
-            if(!file_exists($page_content)) {
-                throw new NotFoundHttpException("Cound not find the page to render.");
+                $page_content = Yii::getAlias('@pages') . $result->file;
+                if(!file_exists($page_content)) {
+                    throw new NotFoundHttpException("Cound not find the page to render.");
+                }
+                $content = $parser->parse(file_get_contents($page_content));
+
+                $this->module->cache->set($cacheKey, $content, $this->module->caching_time);
             }
-            $content = $parser->parse(file_get_contents($page_content));
 
             return $this->render('view', array('content' => $content, 'page' => $result));
 
@@ -143,37 +149,42 @@ class PageController extends Controller
      * @return [type]           [description]
      */
     private function buildBreadcrumbs($file_url) {
-        $page_parts = explode('/', $file_url);
+        $cacheKey = 'breadcrumbs-' . $file_url;
+        $breadcrumbs = $this->module->cache->get($cacheKey);
+        if (!$breadcrumbs) {
+            $page_parts = explode('/', $file_url);
 
-        $repo = $this->getFlywheelRepo();
+            $repo = $this->getFlywheelRepo();
 
-        $breadcrumbs = array();
+            $breadcrumbs = array();
 
-        $i = 0;
-        $out = '';
-        $crumbs = array();
-        foreach($page_parts as $part) {
-            $out = $out . '/' . $page_parts[$i];
-            $crumbs[] = substr($out, 1);
-            $i++;
-        }
-
-        if($file_url != 'index') {
-            Yii::$app->view->params['breadcrumbs'][] = array('label' => Page::title('index'), 'url' => Url::to(array('page/view', 'id' => 'index')));
-        }
-
-        foreach($crumbs as $crumb) {
-            $page = $repo->query()->where('url', '==', $crumb)->execute();
-            $result = $page->first();
-            if($result != null) {
-                if($result->url == $crumbs[count($page_parts)-1]) {
-                    Yii::$app->view->params['breadcrumbs'][] = array('label' => $result->title);
-                } else {
-                    Yii::$app->view->params['breadcrumbs'][] = array('label' => $result->title, 'url' => Url::to(array('page/view', 'id' => $result->url)));
-                }
-            } else {
-                Yii::$app->view->params['breadcrumbs'][] = array('label' => $crumb, 'class' => 'disabled');
+            $i = 0;
+            $out = '';
+            $crumbs = array();
+            foreach($page_parts as $part) {
+                $out = $out . '/' . $page_parts[$i];
+                $crumbs[] = substr($out, 1);
+                $i++;
             }
+
+            if($file_url != 'index') {
+                Yii::$app->view->params['breadcrumbs'][] = array('label' => Page::title('index'), 'url' => Url::to(array('page/view', 'id' => 'index')));
+            }
+
+            foreach($crumbs as $crumb) {
+                $page = $repo->query()->where('url', '==', $crumb)->execute();
+                $result = $page->first();
+                if($result != null) {
+                    if($result->url == $crumbs[count($page_parts)-1]) {
+                        Yii::$app->view->params['breadcrumbs'][] = array('label' => $result->title);
+                    } else {
+                        Yii::$app->view->params['breadcrumbs'][] = array('label' => $result->title, 'url' => Url::to(array('page/view', 'id' => $result->url)));
+                    }
+                } else {
+                    Yii::$app->view->params['breadcrumbs'][] = array('label' => $crumb, 'class' => 'disabled');
+                }
+            }
+            $this->module->cache->set($cacheKey, $breadcrumbs, $this->module->caching_time);
         }
 
         return $breadcrumbs;

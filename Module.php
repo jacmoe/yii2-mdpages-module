@@ -67,6 +67,7 @@ class Module extends \yii\base\Module
      */
     public $absolute_wikilinks = false;
 
+    public $caching_time = 60;
     /**
     * @inheritdoc
     */
@@ -83,6 +84,8 @@ class Module extends \yii\base\Module
     public function init()
     {
         parent::init();
+
+        \Yii::configure($this, require(__DIR__ . '/config.php'));
 
         if (\Yii::$app instanceof \yii\console\Application) {
             $this->controllerNamespace = 'jacmoe\mdpages\commands';
