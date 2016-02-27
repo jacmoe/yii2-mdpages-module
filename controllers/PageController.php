@@ -97,9 +97,9 @@ class PageController extends Controller
                 $view_to_use = $result->view;
                 $render_view = Yii::$app->view->theme->getBasePath() . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'page' . DIRECTORY_SEPARATOR . $result->view . '.' . Yii::$app->view->defaultExtension;
                 if(!is_file($render_view)) {
-                    $render_view = $this->getViewPath() . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'page' . DIRECTORY_SEPARATOR . $result->view . '.' . Yii::$app->view->defaultExtension;
+                    $render_view = $this->getViewPath() . DIRECTORY_SEPARATOR . $result->view . '.' . Yii::$app->view->defaultExtension;
                     if(!is_file($render_view)) {
-                        $view_to_use = 'view';
+                        throw new NotFoundHttpException("Cound not find the view called '$result->view'.");
                     }
                 }
                 return $this->render($view_to_use, array('content' => $content, 'page' => $result));
