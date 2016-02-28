@@ -114,6 +114,30 @@ class MdPagesMarkdown extends GithubMarkdown
     /**
     * @inheritdoc
     */
+    protected function renderImage($block)
+    {
+        if (isset($block['refkey'])) {
+            if (($ref = $this->lookupReference($block['refkey'])) !== false) {
+                $block = array_merge($block, $ref);
+            } else {
+                return $block['orig'];
+            }
+        }
+        $image = \Yii::getAlias('@app/web') . $block['url'];
+        $image_info = array_values(getimagesize($image));
+        list($width, $height, $type, $attr) = $image_info;
+
+        return '<img src="' . htmlspecialchars($block['url'], ENT_COMPAT | ENT_HTML401, 'UTF-8') . '"'
+        . (!isset($width) ? '' : ' width=' . $width)
+        . (!isset($height) ? '' : ' height=' . $height)
+        . ' alt="' . htmlspecialchars($block['text'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE, 'UTF-8') . '"'
+        . (empty($block['title']) ? '' : ' title="' . htmlspecialchars($block['title'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE, 'UTF-8') . '"')
+        . ($this->html5 ? '>' : ' />');
+    }
+
+    /**
+    * @inheritdoc
+    */
     protected function renderCode($block)
     {
         if (self::$highlighter === null) {
