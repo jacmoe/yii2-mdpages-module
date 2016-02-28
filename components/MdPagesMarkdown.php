@@ -86,7 +86,7 @@ class MdPagesMarkdown extends GithubMarkdown
     public function parse($text)
     {
         $markup = parent::parse($text);
-        $markup = $this->applyToc($markup);
+        //$markup = $this->applyToc($markup);
         return $markup;
     }
 
