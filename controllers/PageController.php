@@ -50,10 +50,9 @@ class PageController extends Controller
     /**
      * Renders a page
      * @param string $id id of page (url)
-     * @param integer $page page number for pagination
      * @return string
      */
-    public function actionView($id = 'index', $page = 0)
+    public function actionView($id = 'index')
     {
         $dir = Yii::getAlias('@pages');
         if(!file_exists($dir)) {

@@ -68,13 +68,13 @@ class Page {
                     $repo = $controller->getFlywheelRepo();
                     if(empty($order_by)) {
                         if(isset($where)) {
-                            return $repo->query()->limit($limit, $offset)->where($where)->execute();
+                            return $repo->query()->limit($limit, $offset)->where($where[0], $where[1], $where[2])->execute();
                         } else {
                             return $repo->query()->limit($limit, $offset)->execute();
                         }
                     } else {
                         if(isset($where)) {
-                            return $repo->query()->limit($limit, $offset)->where($where)->orderBy($order_by)->execute();
+                            return $repo->query()->limit($limit, $offset)->where($where[0], $where[1], $where[2])->orderBy($order_by)->execute();
                         } else {
                             return $repo->query()->limit($limit, $offset)->orderBy($order_by)->execute();
                         }
@@ -84,6 +84,17 @@ class Page {
             }
         }
         throw new NotSupportedException("Can't be called outside of jacmoe\mdpages module.");
+    }
+
+    /**
+     * [paginate description]
+     * @return [type] [description]
+     */
+    public static function paginate($order_by = '', $where = null) {
+        $offset = \Yii::$app->getRequest()->getQueryParam('page');
+        if(isset($offset)) {
+            return Page::pages($order_by, $where, 2, $offset - 1);
+        }
     }
 
 }
