@@ -8,6 +8,13 @@ $this->title = isset($page->title) ? $page->title : 'Untitled';
     <?= $content; ?>
 </div>
 <div class="content">
+    <pre>
+    <?php
+        print_r(Page::paginate('created DESC'));
+    ?>
+    </pre>
+</div>
+<div class="content">
     <hr>
     <h3>Contributors to this page</h3>
     <?php
