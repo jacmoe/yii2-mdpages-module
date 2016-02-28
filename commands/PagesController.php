@@ -45,20 +45,20 @@ class PagesController extends Controller
     public $mutex = 'yii\mutex\FileMutex';
 
     /**
-     * [$flywheel_config description]
-     * @var [type]
+     * Flywheel Config instance
+     * @var JamesMoss\Flywheel\Config
      */
     protected $flywheel_config = null;
 
     /**
-     * [$flywheel_repo description]
-     * @var [type]
+     * Flywheel Repository instance
+     * @var JamesMoss\Flywheel\Repository
      */
     protected $flywheel_repo = null;
 
     /**
-     * [$versionControlSystems description]
-     * @var [type]
+     * Array of possible version control systems
+     * @var Object of type VersionControlSystem
      */
     public $versionControlSystems = [
         '.git' => [
@@ -260,10 +260,6 @@ class PagesController extends Controller
             '{projectRoot}' => Yii::getAlias($module->root_directory),
             '{repository}' => $module->repository_url,
             ]);
-        $log = $result->toString();
-        //echo $log . "\n\n";
-
-        $repo = $this->getFlywheelRepo();
 
         $files = FileHelper::findFiles(Yii::getAlias('@pages'), [
             'only' => ['*' . $module->page_extension],
@@ -295,8 +291,6 @@ class PagesController extends Controller
             return self::EXIT_CODE_ERROR;
         }
 
-        $repo = $this->getFlywheelRepo();
-
         $files = FileHelper::findFiles(Yii::getAlias('@pages'), [
             'only' => ['*' . $module->page_extension],
         ]);
@@ -310,14 +304,15 @@ class PagesController extends Controller
     /**
      * Creates a symlink from the images directory in content to the
      * public web directory
+     * This is called by the Deployer script, hence it being an action
      */
     public function actionSymlink() {
         $this->createImageSymlink();
     }
 
     /**
-    * [createImageSymlink description]
-    * @return [type] [description]
+    * Creates a symlink from the images directory in content to the
+    * public web directory
     */
     protected function createImageSymlink() {
         $image_dir = Yii::getAlias('@pages') . '/images';
@@ -356,8 +351,8 @@ class PagesController extends Controller
     }
 
     /**
-     * [getFlywheelRepo description]
-     * @return [type] [description]
+     * Gets the Flywheel Repository instance. Creates it if it doesn't exist.
+     * @return JamesMoss\Flywheel\Repository A handle to the repository
      */
     protected function getFlywheelRepo()
     {
@@ -377,10 +372,10 @@ class PagesController extends Controller
     }
 
     /**
-     * [runCurl description]
-     * @param  [type] $curl_url [description]
-     * @param  [type] $module   [description]
-     * @return [type]           [description]
+     * Calls the Github API using Curl and a secret Github token.
+     * @param  string $curl_url The Github API endpoint to call
+     * @param  Object $module   Handle to the active module
+     * @return string           The JSON response
      */
     private function runCurl($curl_url, $module) {
 
@@ -395,9 +390,10 @@ class PagesController extends Controller
     }
 
     /**
-     * [committersFromFile description]
-     * @param  [type] $file [description]
-     * @return [type]       [description]
+     * Asks Github for the list of contributors to a file
+     * @param  string $file     The file to generate contributors list for
+     * @param  Object $module   Handle to the active module
+     * @return array            Unique list of contributors to the file in question
      */
     private function committersFromFile($file, $module) {
 
@@ -425,10 +421,10 @@ class PagesController extends Controller
     }
 
     /**
-     * [unique_multidim_array description]
-     * @param  [type] $array [description]
-     * @param  [type] $key   [description]
-     * @return [type]        [description]
+     * Produces an array with unique entries from an array with possible duplicate entries
+     * @param  array $array Array with possible duplicate entries
+     * @param  string $key  The key to use when determining what is duplicate
+     * @return array        An array of unique entries
      */
     private function unique_multidim_array($array, $key)
     {
