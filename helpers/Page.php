@@ -68,13 +68,15 @@ class Page {
                     $repo = $controller->getFlywheelRepo();
                     if(empty($order_by)) {
                         if(isset($where)) {
-                            return $repo->query()->limit($limit, $offset)->where($where[0], $where[1], $where[2])->execute();
+                            list($field, $operator, $value) = $where;
+                            return $repo->query()->limit($limit, $offset)->where($field, $operator, $value)->execute();
                         } else {
                             return $repo->query()->limit($limit, $offset)->execute();
                         }
                     } else {
                         if(isset($where)) {
-                            return $repo->query()->limit($limit, $offset)->where($where[0], $where[1], $where[2])->orderBy($order_by)->execute();
+                            list($field, $operator, $value) = $where;
+                            return $repo->query()->limit($limit, $offset)->where($field, $operator, $value)->orderBy($order_by)->execute();
                         } else {
                             return $repo->query()->limit($limit, $offset)->orderBy($order_by)->execute();
                         }
