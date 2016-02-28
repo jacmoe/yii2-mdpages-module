@@ -79,7 +79,18 @@ class Module extends \yii\base\Module
      */
     public $absolute_wikilinks = false;
 
+    /**
+     * The amount of time in seconds to cache content
+     * @var integer
+     */
     public $caching_time = 60;
+
+    /**
+     * Should the Markdown page parser generate page toc?
+     * @var bool
+     */
+    public $generate_page_toc = true;
+
     /**
     * @inheritdoc
     */
