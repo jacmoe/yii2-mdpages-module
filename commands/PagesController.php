@@ -176,6 +176,11 @@ class PagesController extends Controller
         if ($content_cache) {
             $module->cache->delete($content_cacheKey);
         }
+        $headings_cacheKey = 'content-' . $url . '-headings';
+        $headings_cache = $module->cache->get($headings_cacheKey);
+        if ($headings_cache) {
+            $module->cache->delete($headings_cacheKey);
+        }
     }
 
     /**

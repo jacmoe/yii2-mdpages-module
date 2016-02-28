@@ -93,7 +93,8 @@ class PageController extends Controller
 
             $cacheKey = 'content-' . $id;
             $content = $this->module->cache->get($cacheKey);
-            if (!$content) {
+            $headings = $this->module->cache->get($cacheKey . '-headings');
+            if ((!$content) || (!$headings)) {
                 $parser = new MdPagesMarkdown();
 
                 $page_content = Yii::getAlias('@pages') . $result->file;
@@ -101,8 +102,10 @@ class PageController extends Controller
                     throw new NotFoundHttpException("Cound not find the page to render.");
                 }
                 $content = $parser->parse(file_get_contents($page_content));
+                $headings = $parser->getHeadings();
 
                 $this->module->cache->set($cacheKey, $content, $this->module->caching_time);
+                $this->module->cache->set($cacheKey . '-headings', $headings, $this->module->caching_time);
             }
 
             if(isset($result->view)) {
@@ -118,9 +121,9 @@ class PageController extends Controller
                         throw new NotFoundHttpException("Cound not find the view called '$result->view'.");
                     }
                 }
-                return $this->render($view_to_use, array('content' => $content, 'page' => $result));
+                return $this->render($view_to_use, array('content' => $content, 'headings' => $headings, 'page' => $result));
             } else {
-                return $this->render('view', array('content' => $content, 'page' => $result));
+                return $this->render('view', array('content' => $content, 'headings' => $headings, 'page' => $result));
             }
 
         } else {
