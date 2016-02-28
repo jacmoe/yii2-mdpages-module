@@ -463,6 +463,16 @@ class PagesController extends Controller
      */
     public function actionTest()
     {
+        $module = \jacmoe\mdpages\Module::getInstance();
+        $repo = $this->getFlywheelRepo();
+        $page = $repo->query()->where('file', '==', 'index')->execute();
+        $result = $page->first();
+        if($result != null) {
+            $avatar_source_url = $result->contributors[0]->avatar_url;
+        }
+
+        $imagine = new Imagine\Imagick\Imagine();
+        $mode = Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
     }
 
 }

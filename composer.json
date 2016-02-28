@@ -14,7 +14,8 @@
         "yiisoft/yii2": "*",
         "symfony/yaml": "^3.0",
         "jamesmoss/flywheel": "^0.4.2",
-        "scrivo/highlight.php": "^9.0"
+        "scrivo/highlight.php": "^9.0",
+        "imagine/imagine": "^0.6.3"
     },
     "autoload": {
         "psr-4": {
