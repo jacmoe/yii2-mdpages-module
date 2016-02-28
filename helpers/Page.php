@@ -94,6 +94,8 @@ class Page {
         $offset = \Yii::$app->getRequest()->getQueryParam('page');
         if(isset($offset)) {
             return Page::pages($order_by, $where, 2, $offset - 1);
+        } else {
+            return Page::pages($order_by, $where, 2);
         }
     }
 
