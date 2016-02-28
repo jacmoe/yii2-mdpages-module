@@ -31,6 +31,8 @@ use jacmoe\mdpages\components\Meta;
 use JamesMoss\Flywheel\Document;
 use JamesMoss\Flywheel\Config;
 use JamesMoss\Flywheel\Repository;
+use Imagine\Gd\Imagine;
+use Imagine\Image\ImageInterface;
 
 /**
  * The command-line interface to the mdpages module
@@ -417,7 +419,27 @@ class PagesController extends Controller
         }
         $unique_contributors = $this->unique_multidim_array($contributors, 'login');
 
+        $this->createAvatar($unique_contributors, $module);
+
         return $unique_contributors;
+    }
+
+    private function createAvatar($contributors, $module) {
+
+        $avatars_dir = Yii::getAlias('@app/web') . DIRECTORY_SEPARATOR . 'avatars';
+        if(!is_dir($avatars_dir)) {
+            FileHelper::createDirectory($avatars_dir);
+        }
+        $imagine = new Imagine();
+        $mode = ImageInterface::THUMBNAIL_OUTBOUND;
+        $size    = new \Imagine\Image\Box(24, 24);
+
+        foreach($contributors as $contributor) {
+            $imagine->open($contributor['avatar_url'])
+                ->thumbnail($size, $mode)
+                ->save($avatars_dir . DIRECTORY_SEPARATOR . $contributor['login'] . '.png');
+        }
+
     }
 
     /**
@@ -452,7 +474,8 @@ class PagesController extends Controller
         if($this->confirm('Delete content and data directories ?')) {
             FileHelper::removeDirectory(Yii::getAlias($module->pages_directory));
             FileHelper::removeDirectory(Yii::getAlias($module->flywheel_config));
-            $this->stdout("\nContent and data directories deleted.\n", Console::FG_GREEN);
+            FileHelper::removeDirectory(Yii::getAlias('@app/web') . DIRECTORY_SEPARATOR . 'avatars');
+            $this->stdout("\nContent and data and avatars directories deleted.\n", Console::FG_GREEN);
         } else {
             $this->stdout("Nothing was deleted - command interrupted.\n", Console::FG_GREEN);
         }
@@ -463,16 +486,6 @@ class PagesController extends Controller
      */
     public function actionTest()
     {
-        $module = \jacmoe\mdpages\Module::getInstance();
-        $repo = $this->getFlywheelRepo();
-        $page = $repo->query()->where('file', '==', 'index')->execute();
-        $result = $page->first();
-        if($result != null) {
-            $avatar_source_url = $result->contributors[0]->avatar_url;
-        }
-
-        $imagine = new Imagine\Imagick\Imagine();
-        $mode = Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
     }
 
 }
