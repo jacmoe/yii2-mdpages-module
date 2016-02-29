@@ -10,7 +10,7 @@ $this->title = isset($page->title) ? $page->title : 'Untitled';
 <div class="content">
     <pre>
     <?php
-        print_r(Page::paginate('created DESC'));
+        //print_r(Page::paginate('created DESC'));
     ?>
     </pre>
 </div>

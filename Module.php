@@ -125,28 +125,6 @@ class Module extends \yii\base\Module
             throw new \yii\base\InvalidConfigException("Important configuration values have not been set.\nOne or more of the following configuration values are empty:\nrepository_url\ngithub_token\ngithub_owner\ngithub_repo\n\nPlease check your module configuration.");
         }
 
-        // if (\Yii::$app instanceof \yii\web\Application) {
-        //     \Yii::$app->getUrlManager()->addRules([
-        //         [
-        //             'class' => 'yii\web\UrlRule',
-        //             'pattern' => $this->id . '/<controller:\w+>/<id:[\w_\/-]+>',
-        //             'route' => $this->id . '/<controller>/view',
-        //             'encodeParams' => false
-        //         ],
-        //         [
-        //             'class' => 'yii\web\UrlRule',
-        //             'pattern' => $this->id . '/<controller:\w+>/<action:\w+>/<id:[\w_\/-]+>',
-        //             'route' => $this->id . '/<controller>/<action>',
-        //             'encodeParams' => false
-        //         ],
-        //         [
-        //             'class' => 'yii\web\UrlRule',
-        //             'pattern' => $this->id . '/<controller:\w+>/<action:\w+>',
-        //             'route' => $this->id . '/<controller>/<action>',
-        //         ],
-        //     ], false);
-        // }
-
         \Yii::setAlias('@pages', $this->pages_directory);
 
     }
