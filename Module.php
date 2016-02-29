@@ -114,6 +114,17 @@ class Module extends \yii\base\Module
             $this->controllerNamespace = 'jacmoe\mdpages\commands';
         }
 
+        $important = array(
+            $this->repository_url,
+            $this->github_token,
+            $this->github_owner,
+            $this->github_repo
+        );
+        $results = array_filter($important, function($v){return empty($v);});
+        if(count($results) > 0) {
+            throw new \yii\base\InvalidConfigException("Important configuration values have not been set.\nOne or more of the following configuration values are empty:\nrepository_url\ngithub_token\ngithub_owner\ngithub_repo\n\nPlease check your module configuration.");
+        }
+
         // if (\Yii::$app instanceof \yii\web\Application) {
         //     \Yii::$app->getUrlManager()->addRules([
         //         [
