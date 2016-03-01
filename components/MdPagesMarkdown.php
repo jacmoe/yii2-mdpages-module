@@ -126,7 +126,7 @@ class MdPagesMarkdown extends GithubMarkdown
                 return $block['orig'];
             }
         }
-        $image = \Yii::getAlias('@app/web') . $block['url'];
+        $image = \Yii::getAlias('@app/web/images/') . $block['url'];
         $image_info = array_values(getimagesize($image));
         list($width, $height, $type, $attr) = $image_info;
 
