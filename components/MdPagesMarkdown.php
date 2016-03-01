@@ -21,6 +21,8 @@ use yii\helpers\Html;
 use yii\helpers\Inflector;
 use yii\helpers\Markdown;
 
+use jacmoe\mdpages\components\SnippetParser;
+
 /**
 * A Markdown helper with support for class reference links.
 *
@@ -85,7 +87,10 @@ class MdPagesMarkdown extends GithubMarkdown
 
     public function parse($text)
     {
-        $markup = parent::parse($text);
+        $snippetParser = new SnippetParser;
+        $snippetParser->injectSettings();
+        $text_snipped = $snippetParser->parse($text);
+        $markup = parent::parse($text_snipped);
         $module = \jacmoe\mdpages\Module::getInstance();
         if($module->generate_page_toc) {
             $markup = $this->applyToc($markup);
@@ -110,11 +115,6 @@ class MdPagesMarkdown extends GithubMarkdown
     }
 
     /**
-    * @var Highlighter
-    */
-    private static $highlighter;
-
-    /**
     * @inheritdoc
     */
     protected function renderImage($block)
@@ -137,6 +137,11 @@ class MdPagesMarkdown extends GithubMarkdown
         . (empty($block['title']) ? '' : ' title="' . htmlspecialchars($block['title'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE, 'UTF-8') . '"')
         . ($this->html5 ? '>' : ' />');
     }
+
+    /**
+    * @var Highlighter
+    */
+    private static $highlighter;
 
     /**
     * @inheritdoc
@@ -165,35 +170,6 @@ class MdPagesMarkdown extends GithubMarkdown
             echo $e;
             return parent::renderCode($block);
         }
-    }
-
-    /**
-    * Highlights code
-    *
-    * @param string $code code to highlight
-    * @param string $language language of the code to highlight
-    * @return string HTML of highlighted code
-    * @deprecated since 2.0.5 this method is not used anymore, highlight.php is used for highlighting
-    */
-    public static function highlight($code, $language)
-    {
-        if ($language !== 'php') {
-            return htmlspecialchars($code, ENT_NOQUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        }
-
-        if (strncmp($code, '<?php', 5) === 0) {
-            $text = @highlight_string(trim($code), true);
-        } else {
-            $text = highlight_string("<?php ".trim($code), true);
-            $text = str_replace('&lt;?php', '', $text);
-            if (($pos = strpos($text, '&nbsp;')) !== false) {
-                $text = substr($text, 0, $pos) . substr($text, $pos + 6);
-            }
-        }
-        // remove <code><span style="color: #000000">\n and </span>tags added by php
-        $text = substr(trim($text), 36, -16);
-
-        return $text;
     }
 
     /**
