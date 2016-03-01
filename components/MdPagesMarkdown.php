@@ -89,7 +89,7 @@ class MdPagesMarkdown extends GithubMarkdown
     {
         $module = \jacmoe\mdpages\Module::getInstance();
         $snippetParser = new SnippetParser;
-        $snippetParser->injectSettings($module->snippets);
+        $snippetParser->addSnippets($module->snippets);
         $text_snipped = $snippetParser->parse($text);
         $markup = parent::parse($text_snipped);
         if($module->generate_page_toc) {

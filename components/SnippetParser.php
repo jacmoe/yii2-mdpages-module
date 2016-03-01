@@ -47,20 +47,22 @@ class SnippetParser
     }
 
     /**
-    * inject settings (for PhileCMS < 1.5)
+    * Adds snippets so that the SnippetParser has snippets to parse and render.
     *
-    * @param array $settings
+    * @param array $settings    an array of snippets
     */
-    public function injectSettings(array $snippets = null) {
+    public function addSnippets(array $snippets = null) {
 
         // register default snippets
         $this->add(new DefaultSnippets());
 
-        foreach ($snippets as $snippet=>$definition) {
-            if ($definition instanceof Snippets) {
-                $this->add($definition);
-            } else {
-                $this->add($snippet, $definition);
+        if(!is_null($snippets)) {
+            foreach ($snippets as $snippet=>$definition) {
+                if ($definition instanceof Snippets) {
+                    $this->add($definition);
+                } else {
+                    $this->add($snippet, $definition);
+                }
             }
         }
     }
