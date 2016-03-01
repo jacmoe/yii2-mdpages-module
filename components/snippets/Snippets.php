@@ -55,39 +55,40 @@ class Snippets {
     * @return string
     */
     protected function getLink($link) {
-        $page = new \Phile\Repository\Page();
-        $linked_page = $page->findByPath($link);
-
-        if ($linked_page) {
-            // the user linked to an internal page
-            return \Phile\Utility::getBaseUrl() . '/'. $linked_page->getUrl();
-        }
-
-        $file = ROOT_DIR . DIRECTORY_SEPARATOR . $link;
-        if (file_exists($file)) {
-            // the user linked to an internal file
-            return \Phile\Utility::getBaseUrl() . '/' . $link;
-        }
-
-        // it's not an internal page, it's not an internal file -
-        // let's see if it's (at least) a somewhat valid URL
-        $url_parts = parse_url($link);
-
-        if (is_array($url_parts)) {
-            if (!array_key_exists("scheme", $url_parts)) {
-                // it doesn't have a http:// or https:// or similar prefix.
-                // This could mean the user provided something like: (link: cnn.com)
-                // -> check if the first part of the link looks like a domain name
-                $p = explode('/', $url_parts["path"]);
-                $domain = $p[0];
-
-                if ($this->isValidDomainName($domain)) {
-                    // the first part of the link looks like a valid domain name
-                    // -> just prepend 'http://' and continue
-                    return "http://$link";
-                }
-            }
-        }
+        //TODO: figure out if this is needed or wanted
+        // $page = new \Phile\Repository\Page();
+        // $linked_page = $page->findByPath($link);
+        //
+        // if ($linked_page) {
+        //     // the user linked to an internal page
+        //     return \Phile\Utility::getBaseUrl() . '/'. $linked_page->getUrl();
+        // }
+        //
+        // $file = ROOT_DIR . DIRECTORY_SEPARATOR . $link;
+        // if (file_exists($file)) {
+        //     // the user linked to an internal file
+        //     return \Phile\Utility::getBaseUrl() . '/' . $link;
+        // }
+        //
+        // // it's not an internal page, it's not an internal file -
+        // // let's see if it's (at least) a somewhat valid URL
+        // $url_parts = parse_url($link);
+        //
+        // if (is_array($url_parts)) {
+        //     if (!array_key_exists("scheme", $url_parts)) {
+        //         // it doesn't have a http:// or https:// or similar prefix.
+        //         // This could mean the user provided something like: (link: cnn.com)
+        //         // -> check if the first part of the link looks like a domain name
+        //         $p = explode('/', $url_parts["path"]);
+        //         $domain = $p[0];
+        //
+        //         if ($this->isValidDomainName($domain)) {
+        //             // the first part of the link looks like a valid domain name
+        //             // -> just prepend 'http://' and continue
+        //             return "http://$link";
+        //         }
+        //     }
+        // }
 
         // If we get to this point, we just return whatever the user typed.
         return $link;

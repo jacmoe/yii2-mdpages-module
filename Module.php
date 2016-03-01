@@ -92,6 +92,12 @@ class Module extends \yii\base\Module
     public $generate_page_toc = true;
 
     /**
+     * Snippets for the SnippetParser
+     * @var array
+     */
+    public $snippets = null;
+
+    /**
     * @inheritdoc
     */
     public $controllerNamespace = 'jacmoe\mdpages\controllers';
