@@ -51,19 +51,16 @@ class SnippetParser
     *
     * @param array $settings
     */
-    public function injectSettings(array $settings = null) {
-        $this->settings = ($settings === null) ? array() : $settings;
+    public function injectSettings(array $snippets = null) {
 
         // register default snippets
         $this->add(new DefaultSnippets());
 
-        if (array_key_exists('snippets', $this->settings)) {
-            foreach ($this->settings['snippets'] as $snippet=>$definition) {
-                if ($definition instanceof Snippets) {
-                    $this->add($definition);
-                } else {
-                    $this->add($snippet, $definition);
-                }
+        foreach ($snippets as $snippet=>$definition) {
+            if ($definition instanceof Snippets) {
+                $this->add($definition);
+            } else {
+                $this->add($snippet, $definition);
             }
         }
     }
