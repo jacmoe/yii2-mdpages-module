@@ -11,6 +11,7 @@ namespace jacmoe\mdpages\components;
 *                 module
 *
 *	Copyright (c) 2016 Jacob Moen
+*   Copyright (c) 2014 Edward Akerboom
 *	Licensed under the MIT license
 */
 
@@ -18,6 +19,13 @@ use jacmoe\mdpages\components\snippets\Snippets;
 use jacmoe\mdpages\components\snippets\DefaultSnippets;
 use jacmoe\mdpages\components\snippets\SnippetValue;
 
+/**
+* Extends standard Markdown syntax with pre-defined snippets
+*
+* @author Jacob Moen <jacmoe.dk@gmail.com>
+* Originally part of infostreams/snippets = https://github.com/infostreams/snippets
+* @author Edward Akerboom <github@infostreams.net>
+*/
 class SnippetParser
 {
     protected $snippets = array();

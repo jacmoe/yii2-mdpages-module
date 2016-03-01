@@ -11,9 +11,17 @@ namespace jacmoe\mdpages\components\snippets;
 *                 module
 *
 *	Copyright (c) 2016 Jacob Moen
+*   Copyright (c) 2014 Edward Akerboom
 *	Licensed under the MIT license
 */
 
+/**
+* Collection of default snippets for the SnippetParser
+*
+* @author Jacob Moen <jacmoe.dk@gmail.com>
+* Originally part of infostreams/snippets = https://github.com/infostreams/snippets
+* @author Edward Akerboom <github@infostreams.net>
+*/
 class DefaultSnippets extends Snippets {
 
     /**
