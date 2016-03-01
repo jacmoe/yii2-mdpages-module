@@ -18,6 +18,7 @@ use cebe\markdown\GithubMarkdown;
 use DomainException;
 use Highlight\Highlighter;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\helpers\Inflector;
 use yii\helpers\Markdown;
 
@@ -127,10 +128,11 @@ class MdPagesMarkdown extends GithubMarkdown
             }
         }
         $image = \Yii::getAlias('@app/web/images/') . $block['url'];
+        $image_url = Url::home(true) . "images/" . $block['url'];
         $image_info = array_values(getimagesize($image));
         list($width, $height, $type, $attr) = $image_info;
 
-        return '<img src="' . htmlspecialchars($block['url'], ENT_COMPAT | ENT_HTML401, 'UTF-8') . '"'
+        return '<img src="' . htmlspecialchars($image_url, ENT_COMPAT | ENT_HTML401, 'UTF-8') . '"'
         . (!isset($width) ? '' : ' width=' . $width)
         . (!isset($height) ? '' : ' height=' . $height)
         . ' alt="' . htmlspecialchars($block['text'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE, 'UTF-8') . '"'
