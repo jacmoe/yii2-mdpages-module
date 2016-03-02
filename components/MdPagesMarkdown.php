@@ -187,7 +187,7 @@ class MdPagesMarkdown extends GithubMarkdown
         } else {
             $hash = Inflector::slug(strip_tags($content));
         }
-        $hashLink = "<span id=\"$hash\"></span><a href=\"#$hash\" class=\"hashlink\">&para;</a>";
+        $hashLink = "<a aria-label=\"Anchor link for: $hash\" href=\"#$hash\" class=\"anchor-link\"><i class=\"fa fa-link\"></i></a>";
 
         if ($block['level'] == 2) {
             $this->headings[] = [
@@ -204,7 +204,7 @@ class MdPagesMarkdown extends GithubMarkdown
         }
 
         $tag = 'h' . $block['level'];
-        return "<$tag>$content $hashLink</$tag>";
+        return "<$tag id=\"$hash\">$content $hashLink</$tag>";
     }
 
     /**
