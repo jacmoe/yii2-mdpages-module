@@ -184,9 +184,7 @@ class PagesController extends Controller
     }
 
     /**
-    * Checks if there are remote changes in the content repository
-    * and if there are it applies those changes
-    * and updates the database
+    * Updates the database if there are remote changes
     * @return integer success or fail
     */
     public function actionUpdate()
@@ -244,8 +242,7 @@ class PagesController extends Controller
     }
 
     /**
-    * Initializes the content directory and Flywheel database
-    * from scratch
+    * Initializes the content directory and Flywheel database from scratch
     * @return integer exit code (success or error)
     */
     public function actionInit()
@@ -282,8 +279,7 @@ class PagesController extends Controller
 
 
     /**
-     * Rebuilds the Flywheel database without updating the
-     * updated date
+     * Rebuilds the Flywheel database without updating the updated date
      */
     public function actionRebuild() {
         $module = \jacmoe\mdpages\Module::getInstance();
@@ -309,8 +305,7 @@ class PagesController extends Controller
     }
 
     /**
-     * Creates a symlink from the images directory in content to the
-     * public web directory
+     * Creates a symlink from the images directory in content to the public web directory
      * This is called by the Deployer script, hence it being an action
      */
     public function actionSymlink() {
@@ -429,6 +424,12 @@ class PagesController extends Controller
         return $unique_contributors;
     }
 
+    /**
+     * [createAvatar description]
+     * @param  [type] $contributors [description]
+     * @param  [type] $module       [description]
+     * @return [type]               [description]
+     */
     private function createAvatar($contributors, $module) {
 
         $avatars_dir = Yii::getAlias('@app/web') . DIRECTORY_SEPARATOR . 'avatars';
@@ -486,11 +487,11 @@ class PagesController extends Controller
         }
     }
 
-    /**
-     * This is for testing out new commands
-     */
-    public function actionTest()
-    {
-    }
+    // /**
+    //  * This is for testing out new commands
+    //  */
+    // public function actionTest()
+    // {
+    // }
 
 }

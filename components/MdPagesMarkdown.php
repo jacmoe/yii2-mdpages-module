@@ -118,7 +118,7 @@ class MdPagesMarkdown extends GithubMarkdown
     protected function applyToc($content)
     {
         // generate TOC
-        if (!empty($this->headings)) {
+        if (!empty($this->headings) && (count($this->headings) > 1)) {
             $toc = [];
             foreach ($this->headings as $heading)
             $toc[] = '<li>' . Html::a(strip_tags($heading['title']), '#' . $heading['id']) . '</li>';
