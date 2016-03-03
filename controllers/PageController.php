@@ -83,6 +83,8 @@ class PageController extends Controller
             foreach($view_params as $key => $value) {
                 Yii::$app->view->params[$key] = $value;
             }
+            $github_link = 'https://github.com/' . $this->module->github_owner . '/' . $this->module->github_repo . '/edit/' . $this->module->github_branch . $result->file;
+            Yii::$app->view->params['github-link'] = $github_link;
 
             $this->setMetatags($result);
 

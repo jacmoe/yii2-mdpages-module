@@ -44,6 +44,12 @@ class Module extends \yii\base\Module
     public $github_repo = '';
 
     /**
+     * Repository branch
+     * @var string  What branch the content repository is using
+     */
+    public $github_branch = 'master';
+
+    /**
      * The directory in which the wiki content is stored
      * @var string
      */
