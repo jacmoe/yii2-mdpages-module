@@ -88,15 +88,31 @@ class MdPagesMarkdown extends GithubMarkdown
 
     public function parse($text)
     {
+        $text_wo_frontmatter = $this->removeFrontmatter($text);
         $module = \jacmoe\mdpages\Module::getInstance();
         $snippetParser = new SnippetParser;
         $snippetParser->addSnippets($module->snippets);
-        $text_snipped = $snippetParser->parse($text);
+        $text_snipped = $snippetParser->parse($text_wo_frontmatter);
         $markup = parent::parse($text_snipped);
         if($module->generate_page_toc) {
             $markup = $this->applyToc($markup);
         }
         return $markup;
+    }
+
+    protected function removeFrontmatter($text)
+    {
+        $trimmedText = trim($text);
+        if (strncmp('<!--', $trimmedText, 4) === 0) {
+            // leading meta-block comment uses the <!-- --> style
+            return substr($trimmedText, max(4, strpos($trimmedText, '-->') + 3));
+        } elseif (strncmp('/*', $rawData, 2) === 0) {
+            // leading meta-block comment uses the /* */ style
+            return substr($trimmedText, strpos($trimmedText, '*/') + 2);
+        } else {
+            // no leading meta-block comment
+            return $trimmedText;
+        }
     }
 
     protected function applyToc($content)
