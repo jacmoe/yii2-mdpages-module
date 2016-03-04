@@ -25,10 +25,15 @@ use yii\helpers\Markdown;
 use jacmoe\mdpages\components\SnippetParser;
 
 /**
-* A Markdown helper with support for class reference links.
+* Extended Markdown parser with support for
+* Snippets
+* Codehighlighting
+* Image tags with width and height
+* TOC generation
+* Headlines
 *
+* @author Jacob Moen <jacmoe.dk@gmail.com>
 * @author Carsten Brandt <mail@cebe.cc>
-* @since 2.0
 */
 class MdPagesMarkdown extends GithubMarkdown
 {
@@ -149,12 +154,14 @@ class MdPagesMarkdown extends GithubMarkdown
             $image_info = array_values(getimagesize($image));
             list($width, $height, $type, $attr) = $image_info;
         }
-        return '<img src="' . htmlspecialchars($image_url, ENT_COMPAT | ENT_HTML401, 'UTF-8') . '"'
+        return '<div class="imagewrap">'
+        . '<img src="' . htmlspecialchars($image_url, ENT_COMPAT | ENT_HTML401, 'UTF-8') . '"'
         . (!isset($width) ? '' : ' width=' . $width)
         . (!isset($height) ? '' : ' height=' . $height)
         . ' alt="' . htmlspecialchars($block['text'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE, 'UTF-8') . '"'
         . (empty($block['title']) ? '' : ' title="' . htmlspecialchars($block['title'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE, 'UTF-8') . '"')
-        . ($this->html5 ? '>' : ' />');
+        . ($this->html5 ? '>' : ' />')
+        . '</div>';
     }
 
     /**
@@ -221,22 +228,6 @@ class MdPagesMarkdown extends GithubMarkdown
 
         $tag = 'h' . $block['level'];
         return "<$tag id=\"$hash\">$content $hashLink</$tag>";
-    }
-
-    /**
-    * @inheritdoc
-    */
-    protected function renderLink($block)
-    {
-        $result = parent::renderLink($block);
-
-        /*
-        // add special syntax for linking to the guide
-        $result = preg_replace_callback('/href="guide:([A-z0-9-.#]+)"/i', function($match) {
-        return 'href="' . static::$renderer->generateGuideUrl($match[1]) . '"';
-        }, $result, 1);
-        */
-        return $result;
     }
 
 }
