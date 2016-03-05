@@ -291,7 +291,7 @@ class PagesController extends Controller
 
 
     /**
-     * Rebuilds the Flywheel database without updating the updated date
+     * Rebuilds the Flywheel database
      */
     public function actionRebuild() {
         $module = \jacmoe\mdpages\Module::getInstance();
