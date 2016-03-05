@@ -129,6 +129,18 @@ class PagesController extends Controller
             $values['url'] = $url;
             $values['file'] = $file_field;
 
+            list($contributors, $dates) = $this->committersFromFile(ltrim($values['file'],'/'), $module);
+
+            $updated_date = 0;
+            $created_date = 0;
+            if(count($dates) === 1) {
+                $updated_date = $dates[0];
+                $created_date = $dates[0];
+            } else {
+                $updated_date = reset($dates);
+                $created_date = end($dates);
+            }
+
             $file_action = 'created';
 
             // if the post exists, delete it
@@ -137,7 +149,7 @@ class PagesController extends Controller
             if($result != null) {
                 $file_action = 'updated';
                 $values['created'] = $result->created;
-                $values['updated'] = $update_updated ? time() : $result->updated;
+                $values['updated'] = $update_updated ? $updated_date : $result->updated;
 
                 $this->deleteCachekeys($module, $result->url);
 
@@ -145,11 +157,11 @@ class PagesController extends Controller
             }
 
             if($file_action == 'created') {
-                $values['created'] = time();
-                $values['updated'] = time();
+                $values['created'] = $created_date;
+                $values['updated'] = $created_date;
             }
 
-            $values['contributors'] = $this->committersFromFile(ltrim($values['file'],'/'), $module);
+            $values['contributors'] = $contributors;
 
             $page = new Document($values);
             $repo->store($page);
@@ -395,7 +407,7 @@ class PagesController extends Controller
      * Asks Github for the list of contributors to a file
      * @param  string $file     The file to generate contributors list for
      * @param  Object $module   Handle to the active module
-     * @return array            Unique list of contributors to the file in question
+     * @return array            Unique list of contributors to the file in question including dates
      */
     private function committersFromFile($file, $module) {
 
@@ -406,22 +418,28 @@ class PagesController extends Controller
         //TODO: what to do if the output is invalid?
         $commits = json_decode($output);
 
+        // $debug_dir = Yii::getAlias('@app/debug');
+        // if(!is_dir($debug_dir)) {
+        //     FileHelper::createDirectory($debug_dir);
+        // }
+        // file_put_contents($debug_dir . DIRECTORY_SEPARATOR . str_replace('/', '_', $file) . '-commits', print_r($commits, true));
+
         $contributors = array();
+        $dates = array();
 
         foreach($commits as $commit) {
             $contributor = array();
             $contributor['login'] = $commit->author->login;
             $contributor['avatar_url'] = $commit->author->avatar_url;
             $contributor['html_url'] = $commit->author->html_url;
-            $contributor['name'] = $commit->commit->committer->name;
-            $contributor['email'] = $commit->commit->committer->email;
             $contributors[] = $contributor;
+            $dates[] = strtotime($commit->commit->author->date);
         }
         $unique_contributors = $this->unique_multidim_array($contributors, 'login');
 
         $this->createAvatar($unique_contributors, $module);
-
-        return $unique_contributors;
+        sort($dates, SORT_NUMERIC);
+        return [$unique_contributors, $dates];
     }
 
     /**
