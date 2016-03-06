@@ -117,7 +117,6 @@ class PageController extends Controller
 
             if(isset($result->view)) {
                 $view_to_use = $result->view;
-                $render_view = '';
                 if(isset(Yii::$app->view->theme)) {
                     $render_view = Yii::$app->view->theme->getBasePath() . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'page' . DIRECTORY_SEPARATOR . $result->view . '.' . Yii::$app->view->defaultExtension;
                 } else {

@@ -23,11 +23,10 @@ use yii\base\InvalidCallException;
 class View extends \yii\web\View {
 
     /**
-     * [render description]
-     * @param  [type] $view   [description]
-     * @param  array  $params [description]
-     * @return [type]         [description]
-     */
+     * Override to always pass the current context to render
+     * https://github.com/yiisoft/yii2/issues/4382
+	 * @inheritDoc
+	 */
     public function render($view, $params = array(), $context = null)
     {
         if ($context === null) {
@@ -38,11 +37,10 @@ class View extends \yii\web\View {
     }
 
     /**
-     * [findViewFile description]
-     * @param  [type] $view    [description]
-     * @param  [type] $context [description]
-     * @return [type]          [description]
-     */
+     * If the view is not found by normal means
+     * then use the theme pathmap to find it.
+	 * @inheritDoc
+	 */
     protected function findViewFile($view, $context = null)
     {
         $path = $view . '.' . $this->defaultExtension;
