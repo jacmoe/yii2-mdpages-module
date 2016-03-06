@@ -13,12 +13,11 @@ namespace jacmoe\mdpages\components;
 *	Copyright (c) 2016 Jacob Moen
 *	Licensed under the MIT license
 */
-use Yii;
-use yii\base\InvalidCallException;
 
 /**
  * This View class overrides render and findViewFile
- * to use the theme view files
+ * to be able to use views in the theme pathmap
+ * that does not exist in the overridden module
  */
 class View extends \yii\web\View {
 
