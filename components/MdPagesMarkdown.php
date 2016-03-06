@@ -93,7 +93,7 @@ class MdPagesMarkdown extends GithubMarkdown
 
     public function parse($text)
     {
-        $text_wo_frontmatter = $this->removeFrontmatter($text);
+        $text_wo_frontmatter = (YII_DEBUG) ? $text : $this->removeFrontmatter($text);
         $module = \jacmoe\mdpages\Module::getInstance();
         $snippetParser = new SnippetParser;
         $snippetParser->addSnippets($module->snippets);
