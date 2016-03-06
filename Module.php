@@ -128,6 +128,12 @@ class Module extends \yii\base\Module
     public $feed_author_name = 'Pages Feed';
 
     /**
+     * [$feed_ordering description]
+     * @var string
+     */
+    public $feed_ordering = 'updated DESC';
+
+    /**
      * [$feed_filtering description]
      * @var [type]
      */

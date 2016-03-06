@@ -145,9 +145,9 @@ class PageController extends Controller
         $posts = null;
         if($this->module->feed_filtering) {
             list($field, $operator, $value) = $this->module->feed_filter;
-            $posts = $repo->query()->where($field, $operator, $value)->orderBy('updated DESC')->limit(50,0)->execute();
+            $posts = $repo->query()->where($field, $operator, $value)->orderBy($this->module->feed_ordering)->limit(50,0)->execute();
         } else {
-            $posts = $repo->query()->orderBy('updated DESC')->limit(50,0)->execute();
+            $posts = $repo->query()->orderBy($this->module->feed_ordering)->limit(50,0)->execute();
         }
 
         $feed = new Feed();
