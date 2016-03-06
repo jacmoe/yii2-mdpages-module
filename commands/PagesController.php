@@ -136,13 +136,8 @@ class PagesController extends Controller
             if(isset($values['datetime'])) {
                 // work-around for existing page collections
                 // where the dates in the commits does not apply
-                if(count($dates) === 1) {
-                    $updated_date = $values['datetime'];
-                    $created_date = $values['datetime'];
-                } else {
-                    $updated_date = reset($dates);
-                    $created_date = $values['datetime'];
-                }
+                $updated_date = $values['datetime'];
+                $created_date = $values['datetime'];
             } else {
                 if(count($dates) === 1) {
                     $updated_date = $dates[0];
