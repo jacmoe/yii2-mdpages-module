@@ -141,17 +141,23 @@ class PageController extends Controller
     public function actionRss()
     {
         $repo = $this->getFlywheelRepo();
-        $posts = $repo->query()->orderBy('updated DESC')->limit(50,0)->execute();
 
-        //TODO: create some configurables for this..
+        $posts = null;
+        if($this->module->feed_filtering) {
+            list($field, $operator, $value) = $this->module->feed_filter;
+            $posts = $repo->query()->where($field, $operator, $value)->orderBy('updated DESC')->limit(50,0)->execute();
+        } else {
+            $posts = $repo->query()->orderBy('updated DESC')->limit(50,0)->execute();
+        }
+
         $feed = new Feed();
-        $feed->title = 'Pages Feed';
+        $feed->title = $this->module->feed_title;
         $feed->link = Url::to(['page/rss'], true);
         $feed->selfLink = Url::to(['page/rss'], true);
-        $feed->description = 'Pages News';
+        $feed->description = $this->module->feed_description;
         $feed->language = 'en';
-        //$feed->setWebMaster('sam@rmcreative.ru', 'Alexander Makarov');
-        //$feed->setManagingEditor('sam@rmcreative.ru', 'Alexander Makarov');
+        //$feed->setWebMaster('user@email.com', 'John Doe');
+        //$feed->setManagingEditor('user@email.com', 'John Doe');
         foreach ($posts as $post) {
             $item = new Item();
             $item->title = $post->title;
@@ -159,7 +165,7 @@ class PageController extends Controller
             $item->guid = Url::to(['page/view', 'id' => $post->url], true);
             $item->description = $post->description;
             $item->pubDate = $post->updated;
-            $item->setAuthor('noreply@yiifeed.com', 'Pages Feed');
+            $item->setAuthor($this->module->feed_author_email, $this->module->feed_author_name);
             $feed->addItem($item);
         }
         $feed->render();

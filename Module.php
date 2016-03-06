@@ -104,6 +104,42 @@ class Module extends \yii\base\Module
     public $snippets = null;
 
     /**
+     * [$feed_title description]
+     * @var string
+     */
+    public $feed_title = 'Pages';
+
+    /**
+     * [$feed_description description]
+     * @var string
+     */
+    public $feed_description = 'The pages feed';
+
+    /**
+     * [$feed_author description]
+     * @var string
+     */
+    public $feed_author_email = 'noreply@yoursite.com';
+
+    /**
+     * [$feed_author_name description]
+     * @var string
+     */
+    public $feed_author_name = 'Pages Feed';
+
+    /**
+     * [$feed_filtering description]
+     * @var [type]
+     */
+    public $feed_filtering = false;
+
+    /**
+     * [$feed_filter description]
+     * @var array
+     */
+    public $feed_filter = array('published', '==', true);
+
+    /**
     * @inheritdoc
     */
     public $controllerNamespace = 'jacmoe\mdpages\controllers';
