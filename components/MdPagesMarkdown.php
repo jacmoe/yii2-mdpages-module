@@ -154,14 +154,14 @@ class MdPagesMarkdown extends GithubMarkdown
             $image_info = array_values(getimagesize($image));
             list($width, $height, $type, $attr) = $image_info;
         }
-        return '<div class="imagewrap">'
+        return '<span class="imagewrap">'
         . '<img src="' . htmlspecialchars($image_url, ENT_COMPAT | ENT_HTML401, 'UTF-8') . '"'
         . (!isset($width) ? '' : ' width=' . $width)
         . (!isset($height) ? '' : ' height=' . $height)
         . ' alt="' . htmlspecialchars($block['text'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE, 'UTF-8') . '"'
         . (empty($block['title']) ? '' : ' title="' . htmlspecialchars($block['title'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE, 'UTF-8') . '"')
         . ($this->html5 ? '>' : ' />')
-        . '</div>';
+        . '</span>';
     }
 
     /**
