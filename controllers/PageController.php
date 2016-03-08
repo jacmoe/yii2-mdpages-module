@@ -91,12 +91,16 @@ class PageController extends Controller
                 . $result->file;
             Yii::$app->view->params['github-link'] = $github_link;
 
-            $this->setMetatags($result);
+            //TODO: either turn this into an option
+            // or remove it altogether
+            //$this->setMetatags($result);
 
-            if(isset($result->layout)) {
-                //TODO: error checking ?
-                $this->layout = $result->layout;
-            }
+            //TODO: this should probably go as there is
+            // little need for diferent layouts
+            // if(isset($result->layout)) {
+            //     //TODO: error checking ?
+            //     $this->layout = $result->layout;
+            // }
 
             $cacheKey = 'content-' . $id;
             $content = $this->module->cache->get($cacheKey);
