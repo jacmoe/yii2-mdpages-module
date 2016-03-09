@@ -19,7 +19,7 @@ $this->title = isset($page->title) ? $page->title : 'Untitled';
     <h3>Contributors to this page</h3>
     <?php
         foreach($page->contributors as $contributor) {
-            echo Html::a(Html::img(Yii::getAlias('@web/avatars/') . $contributor->login . '.png', array('width' => '24px', 'height' => '24px', 'title' => $contributor->name)), $contributor->html_url);
+            echo Html::a(Html::img(Yii::getAlias('@web/avatars/') . $contributor->login . '.png', array('width' => '24px', 'height' => '24px', 'title' => $contributor->login)), $contributor->html_url);
         }
     ?>
 </div>
