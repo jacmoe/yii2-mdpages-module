@@ -143,8 +143,8 @@ class PagesController extends Controller
                     $updated_date = $dates[0];
                     $created_date = $dates[0];
                 } else {
-                    $updated_date = reset($dates);
-                    $created_date = end($dates);
+                    $updated_date = end($dates);
+                    $created_date = reset($dates);
                 }
             }
 
