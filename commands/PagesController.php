@@ -168,7 +168,9 @@ class PagesController extends Controller
                 $values['updated'] = $created_date;
             }
 
-            $values['contributors'] = $contributors;
+            if($module->generate_contributor_data) {
+                $values['contributors'] = $contributors;
+            }
 
             $page = new Document($values);
             $repo->store($page);
@@ -435,16 +437,21 @@ class PagesController extends Controller
         $dates = array();
 
         foreach($commits as $commit) {
-            $contributor = array();
-            $contributor['login'] = $commit->author->login;
-            $contributor['avatar_url'] = $commit->author->avatar_url;
-            $contributor['html_url'] = $commit->author->html_url;
-            $contributors[] = $contributor;
+            if($module->generate_contributor_data) {
+                $contributor = array();
+                $contributor['login'] = $commit->author->login;
+                $contributor['avatar_url'] = $commit->author->avatar_url;
+                $contributor['html_url'] = $commit->author->html_url;
+                $contributors[] = $contributor;
+            }
             $dates[] = strtotime($commit->commit->author->date);
         }
-        $unique_contributors = $this->unique_multidim_array($contributors, 'login');
+        $unique_contributors = array();
+        if($module->generate_contributor_data) {
+            $unique_contributors = $this->unique_multidim_array($contributors, 'login');
+            $this->createAvatar($unique_contributors, $module);
+        }
 
-        $this->createAvatar($unique_contributors, $module);
         sort($dates, SORT_NUMERIC);
         return [$unique_contributors, $dates];
     }

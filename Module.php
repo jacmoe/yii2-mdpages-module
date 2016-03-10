@@ -146,6 +146,12 @@ class Module extends \yii\base\Module
     public $feed_filter = array('published', '==', true);
 
     /**
+     * Generate contributor data like avatars, Github URL, etc.
+     * @var [type]
+     */
+    public $generate_contributor_data = true;
+
+    /**
     * @inheritdoc
     */
     public $controllerNamespace = 'jacmoe\mdpages\controllers';
