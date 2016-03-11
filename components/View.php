@@ -24,10 +24,8 @@ use yii\base\InvalidCallException;
 class View extends \yii\web\View {
 
     /**
-     * [render description]
-     * @param  [type] $view   [description]
-     * @param  array  $params [description]
-     * @return [type]         [description]
+     * This View class overrides render and findViewFile
+     * to use the theme view files
      */
     public function render($view, $params = array(), $context = null)
     {
@@ -39,10 +37,9 @@ class View extends \yii\web\View {
     }
 
     /**
-     * [findViewFile description]
-     * @param  [type] $view    [description]
-     * @param  [type] $context [description]
-     * @return [type]          [description]
+     * If the view is not found by normal means
+     * then use the theme pathmap to find it.
+     * @inheritDoc
      */
     protected function findViewFile($view, $context = null)
     {
