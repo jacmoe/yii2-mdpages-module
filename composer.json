@@ -15,7 +15,8 @@
         "symfony/yaml": "^3.0",
         "jamesmoss/flywheel": "^0.4.2",
         "scrivo/highlight.php": "^9.0",
-        "imagine/imagine": "^0.6.3"
+        "imagine/imagine": "^0.6.3",
+        "samdark/sitemap": "^2.0"
     },
     "autoload": {
         "psr-4": {
