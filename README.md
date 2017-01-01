@@ -21,7 +21,7 @@ See [Pype - Personal Yii Page Engine](https://pype.jacmoe.dk/) where it is imple
 *                 |_|          |___/
 *                 module
 *
-*	Copyright (c) 2016 Jacob Moen
+*	Copyright (c) 2016 - 2017 Jacob Moen
 *	Licensed under the MIT license
 */
 ```

@@ -10,7 +10,7 @@ namespace jacmoe\mdpages\components\feed;
 *                 |_|          |___/
 *                 module
 *
-*	Copyright (c) 2016 Jacob Moen
+*	Copyright (c) 2016 - 2017 Jacob Moen
 *	Licensed under the MIT license
 */
 
