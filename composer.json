@@ -18,6 +18,12 @@
         "imagine/imagine": "^0.6.3",
         "samdark/sitemap": "^2.0"
     },
+    "require-dev": {
+        "cebe/assetfree-yii2": "~2.0.0",
+        "codeception/specify": "^0.4.3",
+        "codeception/verify": "^0.3.1",
+        "codeception/codeception": "*"
+    },
     "autoload": {
         "psr-4": {
             "jacmoe\\mdpages\\": ""
