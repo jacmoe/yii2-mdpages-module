@@ -5,5 +5,7 @@
 actor: UnitTester
 modules:
     enabled:
+        - Yii2:
+            configFile: '_app/config/test.php'
         - Asserts
         - \Helper\Unit
