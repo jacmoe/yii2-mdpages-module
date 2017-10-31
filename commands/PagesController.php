@@ -263,6 +263,56 @@ class PagesController extends Controller
     }
 
     /**
+     * Updates the database if there are local changes
+     * @return integer success or fail
+     */
+    public function actionLocalUpdate()
+    {
+        $module = \jacmoe\mdpages\Module::getInstance();
+
+        if(!is_dir(Yii::getAlias($module->pages_directory))) {
+            $this->stderr("Execution terminated: the repository to update does not exist - please run init first.\n", Console::FG_RED);
+            return self::EXIT_CODE_ERROR;
+        }
+
+        if (!$this->acquireMutex()) {
+            $this->stderr("Execution terminated: command is already running.\n", Console::FG_RED);
+            return self::EXIT_CODE_ERROR;
+        }
+
+        $placeholders = [
+            '{binPath}' => 'git',
+            '{projectRoot}' => Yii::getAlias($module->pages_directory),
+            '{remote}' => 'origin',
+            '{branch}' => 'master',
+        ];
+        $result = Shell::execute('(cd {projectRoot}; {binPath} diff --name-only {remote}/{branch}..HEAD)', $placeholders);
+        $raw_files = $result->toString();
+
+        $files = explode("\n", $raw_files);
+        array_shift($files); // the first entry is the command
+        array_pop($files); // the last entry is the exit code
+
+        $to_update = array();
+        foreach($files as $file) {
+            $to_update[] = Yii::getAlias('@pages') . '/' . $file;
+        }
+
+        if(count($to_update) < 1) {
+            $this->stdout("No changes detected\n\n", Console::FG_GREEN);
+        }
+
+        $this->updateDB($to_update);
+
+        $this->createImageSymlink();
+
+
+        $this->releaseMutex();
+        return self::EXIT_CODE_NORMAL;
+
+    }
+
+    /**
     * Initializes the content directory and Flywheel database from scratch
     * @return integer exit code (success or error)
     */
@@ -427,12 +477,6 @@ class PagesController extends Controller
         //TODO: what to do if the output is invalid?
         $commits = json_decode($output);
 
-        // $debug_dir = Yii::getAlias('@app/debug');
-        // if(!is_dir($debug_dir)) {
-        //     FileHelper::createDirectory($debug_dir);
-        // }
-        // file_put_contents($debug_dir . DIRECTORY_SEPARATOR . str_replace('/', '_', $file) . '-commits', print_r($commits, true));
-
         $contributors = array();
         $dates = array();
 
@@ -518,12 +562,5 @@ class PagesController extends Controller
             $this->stdout("Nothing was deleted - command interrupted.\n", Console::FG_GREEN);
         }
     }
-
-    // /**
-    //  * This is for testing out new commands
-    //  */
-    // public function actionTest()
-    // {
-    // }
 
 }
