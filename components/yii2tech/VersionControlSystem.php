@@ -20,7 +20,7 @@ namespace jacmoe\mdpages\components\yii2tech;
  */
 
 
-use yii\base\Object;
+use yii\base\BaseObject;
 
 /**
  * VersionControlSystem is a base class for version control systems.
@@ -28,6 +28,6 @@ use yii\base\Object;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
-abstract class VersionControlSystem extends Object implements VersionControlSystemInterface
+abstract class VersionControlSystem extends BaseObject implements VersionControlSystemInterface
 {
 }

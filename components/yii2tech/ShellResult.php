@@ -21,7 +21,7 @@ namespace jacmoe\mdpages\components\yii2tech;
 
 
 use yii\base\ErrorHandler;
-use yii\base\Object;
+use yii\base\BaseObject;
 
 /**
  * ShellResult represents shell command execution result.
@@ -31,7 +31,7 @@ use yii\base\Object;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
-class ShellResult extends Object
+class ShellResult extends BaseObject
 {
     /**
      * @var string command being executed.
